@@ -37,14 +37,16 @@
       <artifactId>jgoodies-common</artifactId>
       <version>1.8.1</version>
     </dependency>
-
     <dependency>
-      <groupId>raven.swing</groupId>
-      <artifactId>swing-blur-background</artifactId>
-      <version>1.1.0</version>
-      <scope>system</scope>
-
+      <groupId>com.formdev</groupId>
+      <artifactId>flatlaf</artifactId>
+      <version>3.4.1</version>
     </dependency>
+
+
+
+
+
 
 
 
