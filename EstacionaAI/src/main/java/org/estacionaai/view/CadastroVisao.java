@@ -2,6 +2,7 @@ package org.estacionaai.view;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -32,26 +33,28 @@ public class CadastroVisao {
 
         cmdLogin = new JButton("Login");
 
-        // Styling using FlatLaf properties
+
         txtUsername.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Digite Seu Nome");
         txtEmail.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Digite Seu Email");
         txtPassword.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Digite sua senha");
         txtConfirmPassword.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Confirme Sua Senha");
 
-        cmdLogin.putClientProperty(FlatClientProperties.STYLE, "" +
-                "[light]background:darken(@background,10%);" +
-                "[dark]background:lighten(@background,10%);" +
-                "borderWidth:0;" +
-                "focusWidth:0;" +
-                "innerFocusWidth:0");
+        txtUsername.putClientProperty("JComponent.roundRect", true);
+        txtEmail.putClientProperty("JComponent.roundRect", true);
+        txtPassword.putClientProperty("JComponent.roundRect", true);
+        txtConfirmPassword.putClientProperty("JComponent.roundRect", true);
 
-
-
-
+        cmdLogin.putClientProperty(FlatClientProperties.STYLE, ""
+                + "[light]background:darken(@background,10%);"
+                + "[dark]background:lighten(@background,10%);"
+                + "borderWidth:0;"
+                + "focusWidth:0;"
+                + "innerFocusWidth:0;"
+                + "arc:15;"
+                + "hoverBackground:darken(@background,20%);");
 
         // Adding components to the panel
-
-        panel.setPreferredSize(new Dimension(400,300));
+        panel.setPreferredSize(new Dimension(400, 300));
         panel.add(new JLabel("Nome:"), "split 1, span");
         panel.add(txtUsername, "wrap");
         panel.add(new JLabel("Email:"), "split 1, span");
@@ -71,7 +74,8 @@ public class CadastroVisao {
     public static void main(String[] args) {
         try {
             // Define FlatLaf como o Look and Feel
-            UIManager.setLookAndFeel(new FlatDarkLaf());
+            UIManager.setLookAndFeel(new FlatMacDarkLaf());
+
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }

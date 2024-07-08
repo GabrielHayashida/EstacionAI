@@ -1,34 +1,46 @@
 package org.estacionaai.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import org.estacionaai.controller.VeiculoController;
+import org.estacionaai.model.DAO.VeiculoDAO;
+import org.estacionaai.model.VO.VeiculoVO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class TelaInicialVisao extends JPanel{
     private JTable tabela;
+    private VeiculoController controller;
+    private VeiculoDAO veiculoDAO;
+
+
 
     public TelaInicialVisao() {
+
+        this.veiculoDAO = new VeiculoDAO();
+        this.controller = new VeiculoController(veiculoDAO);
         initComponents();
     }
 
     private void initComponents() {
         // Dados da tabela
-        Object[][] data = {
-                {"Nome 1", "Sobrenome 1", "Email 1"},
-                {"Nome 2", "Sobrenome 2", "Email 2"},
-                {"Nome 3", "Sobrenome 3", "Email 3"},
-                {"Nome 4", "Sobrenome 4", "Email 4"}
-        };
+        ArrayList<VeiculoVO> veiculos = controller.getVeiculos();
 
         // Cabeçalho da tabela
-        String[] colunas = {"Nome", "Sobrenome", "Email"};
+        String[] colunas = {"Placa", "Modelo", "Cor", "Vaga Ocupada"};
 
         // Modelo da tabela
-        DefaultTableModel model = new DefaultTableModel(data, colunas);
+        DefaultTableModel model = new DefaultTableModel(colunas, 0);
+
+        // Preenche o modelo com os dados dos veículos
+        for (VeiculoVO veiculo : veiculos) {
+            Object[] rowData = {veiculo.getPlaca(), veiculo.getModelo(), veiculo.getCor(),veiculo.isVaga()};
+            model.addRow(rowData);
+        }
 
         // Criando a tabela com o modelo
         tabela = new JTable(model);
