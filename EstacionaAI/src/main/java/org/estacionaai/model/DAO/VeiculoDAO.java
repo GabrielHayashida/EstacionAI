@@ -1,13 +1,10 @@
 package org.estacionaai.model.DAO;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
 import org.estacionaai.controller.ConexaoBD;
 import org.estacionaai.model.VO.VeiculoVO;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class VeiculoDAO {
@@ -31,8 +28,7 @@ public class VeiculoDAO {
                 veiculos.add(veiculoVO);
             }
 
-            resultado.close();
-            comando.close();
+
 
         } catch (SQLException e) {
             System.err.println("Erro ao executar consulta SQL: " + e.getMessage());
@@ -42,22 +38,78 @@ public class VeiculoDAO {
         return veiculos;
 
     }
-    public static void main(String[] args) {
-        // Criando uma instância do VeiculoDAO
-        VeiculoDAO veiculoDAO = new VeiculoDAO();
+    public VeiculoVO getVeiculosById(String placa) {
+        VeiculoVO veiculoVO = null;
+        String comandoSQL = "SELECT * FROM veiculos WHERE veiculos.placa = ?";
 
-        // Chamando o método getVeiculos para obter a lista de veículos
-        ArrayList<VeiculoVO> veiculos = veiculoDAO.getVeiculos();
+        try (Connection conexao = ConexaoBD.getConexaoBD();
+             PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
 
-        // Exibindo os veículos obtidos no console
-        System.out.println("Lista de Veículos:");
-        for (VeiculoVO veiculo : veiculos) {
-            System.out.println("Placa: " + veiculo.getPlaca());
-            System.out.println("Modelo: " + veiculo.getModelo());
-            System.out.println("Cor: " + veiculo.getCor());
-            System.out.println("Vaga: " + (veiculo.isVaga() ? "Sim" : "Não"));
-            System.out.println("----------------------");
+            comando.setString(1, placa);
+            ResultSet resultado = comando.executeQuery();
+
+            if (resultado.next()) {
+                veiculoVO = new VeiculoVO();
+                veiculoVO.setPlaca(resultado.getString("placa"));
+                veiculoVO.setModelo(resultado.getString("modelo"));
+                veiculoVO.setCor(resultado.getString("cor"));
+                veiculoVO.setVaga(resultado.getBoolean("vaga"));
+            } else {
+                System.err.println("Nenhum veículo encontrado com a placa: " + placa);
+            }
+
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao executar consulta SQL: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return veiculoVO;
+    }
+    public boolean updateVeiculos(VeiculoVO veiculoVO){
+        String comandoSQL = "UPDATE veiculos SET modelo = ?, cor = ?, vaga = ? WHERE placa = ?";
+
+        try (Connection conexao = ConexaoBD.getConexaoBD();
+             PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
+
+            comando.setString(1, veiculoVO.getModelo());
+            comando.setString(2, veiculoVO.getCor());
+            comando.setBoolean(3, veiculoVO.isVaga());
+            comando.setString(4, veiculoVO.getPlaca());
+
+            int resultado = comando.executeUpdate();
+
+            return resultado != 0;
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao executar atualização SQL: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
+    public boolean insertVeiculo(VeiculoVO veiculoVO){
+
+        String comandoSQL = "INSERT INTO veiculos (placa, modelo, cor, vaga) VALUES ('"
+                + veiculoVO.getPlaca() + "', '"
+                + veiculoVO.getModelo() + "', '"
+                + veiculoVO.getCor() + "', "
+                + veiculoVO.isVaga() + ");";
+
+        try (Connection conexao = ConexaoBD.getConexaoBD();
+             Statement comando = conexao.createStatement()) {
+
+            int resultado = comando.executeUpdate(comandoSQL);
+
+            return resultado != 0;
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao executar inserção SQL: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+
+
 
 }

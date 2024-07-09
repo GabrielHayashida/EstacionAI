@@ -1,61 +1,16 @@
-package org.estacionaai.view;
-
 import com.formdev.flatlaf.FlatDarkLaf;
-import org.estacionaai.controller.VeiculoController;
 import org.estacionaai.model.DAO.VeiculoDAO;
-import org.estacionaai.model.VO.VeiculoVO;
-
+import org.estacionaai.view.TabelaVeiculosVisao;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
-public class TelaInicialVisao extends JPanel{
-    private JTable tabela;
-    private VeiculoController controller;
-    private VeiculoDAO veiculoDAO;
+public class TelaInicialVisao extends JPanel {
+    private TabelaVeiculosVisao tabelaVeiculos;
 
-
-
-    public TelaInicialVisao() {
-
-        this.veiculoDAO = new VeiculoDAO();
-        this.controller = new VeiculoController(veiculoDAO);
-        initComponents();
+    public TelaInicialVisao(VeiculoDAO veiculoDAO) {
+        initComponents(veiculoDAO);
     }
 
-    private void initComponents() {
-        // Dados da tabela
-        ArrayList<VeiculoVO> veiculos = controller.getVeiculos();
-
-        // Cabeçalho da tabela
-        String[] colunas = {"Placa", "Modelo", "Cor", "Vaga Ocupada"};
-
-        // Modelo da tabela
-        DefaultTableModel model = new DefaultTableModel(colunas, 0);
-
-        // Preenche o modelo com os dados dos veículos
-        for (VeiculoVO veiculo : veiculos) {
-            Object[] rowData = {veiculo.getPlaca(), veiculo.getModelo(), veiculo.getCor(),veiculo.isVaga()};
-            model.addRow(rowData);
-        }
-
-        // Criando a tabela com o modelo
-        tabela = new JTable(model);
-        tabela.setPreferredScrollableViewportSize(new Dimension(400, 200));
-        tabela.setFillsViewportHeight(true);
-
-        // Adicionando a tabela a um JScrollPane
-        JScrollPane scrollPane = new JScrollPane(tabela);
-
-        // Adicionando o JScrollPane ao layout da JPanel
-        setLayout(new BorderLayout());
-        add(scrollPane, BorderLayout.CENTER);
-    }
-
-    public static void main(String[] args) {
+    private void initComponents(VeiculoDAO veiculoDAO) {
         try {
             // Define FlatLaf como o Look and Feel
             UIManager.setLookAndFeel(new FlatDarkLaf());
@@ -63,15 +18,38 @@ public class TelaInicialVisao extends JPanel{
             e.printStackTrace();
         }
 
-        // Criar uma instância de TelaInicialVisao
-        TelaInicialVisao tela = new TelaInicialVisao();
+        // Instancia a tabela de veículos
+        tabelaVeiculos = new TabelaVeiculosVisao();
 
-        // Criar um JFrame para exibir a tela
-        JFrame frame = new JFrame("Tela Inicial com JTable");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().add(tela);
-        frame.pack();
-        frame.setLocationRelativeTo(null); // Centraliza a janela na tela
-        frame.setVisible(true);
+        // Adiciona a tabela de veículos ao painel principal
+        add(tabelaVeiculos);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                // Define FlatLaf como o Look and Feel
+                UIManager.setLookAndFeel(new FlatDarkLaf());
+            } catch (UnsupportedLookAndFeelException e) {
+                e.printStackTrace();
+            }
+
+            // Cria um VeiculoDAO para passar para a TelaInicialVisao
+            VeiculoDAO veiculoDAO = new VeiculoDAO();
+
+            // Cria um JFrame para exibir a tela
+            JFrame frame = new JFrame("Tela Inicial com JTable");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            // Instancia a tela inicial
+            TelaInicialVisao telaInicial = new TelaInicialVisao(veiculoDAO);
+
+            // Adiciona a tela inicial ao frame
+            frame.getContentPane().add(telaInicial);
+
+            frame.pack();
+            frame.setLocationRelativeTo(null); // Centraliza a janela na tela
+            frame.setVisible(true);
+        });
     }
 }
