@@ -4,13 +4,12 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import org.estacionaai.controller.VeiculoController;
 import org.estacionaai.model.DAO.VeiculoDAO;
 import org.estacionaai.model.VO.VeiculoVO;
-
+import org.estacionaai.view.TabelaVeiculosVisao;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
+
 
 public class TelaInicialVisao extends JPanel{
     private JTable tabela;
@@ -81,27 +80,33 @@ public class TelaInicialVisao extends JPanel{
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    public static void main(String[] args) {
-        // Define o FlatLaf como Look and Feel
-        try {
-            UIManager.setLookAndFeel(new FlatDarkLaf());
-        } catch (UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
+        public static void main (String[]args){
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    // Define FlatLaf como o Look and Feel
+                    UIManager.setLookAndFeel(new FlatDarkLaf());
+                } catch (UnsupportedLookAndFeelException e) {
+                    e.printStackTrace();
+                }
+
+                // Cria um VeiculoDAO para passar para a TelaInicialVisao
+                VeiculoDAO veiculoDAO = new VeiculoDAO();
+
+                // Cria um JFrame para exibir a tela
+                JFrame frame = new JFrame("Tela Inicial com JTable");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+                // Instancia a tela inicial
+                TelaInicialVisao telaInicial = new TelaInicialVisao();
+
+                // Adiciona a tela inicial ao frame
+                frame.getContentPane().add(telaInicial);
+
+                frame.pack();
+                frame.setLocationRelativeTo(null); // Centraliza a janela na tela
+                frame.setVisible(true);
+            });
+
         }
-
-        // Cria a janela principal
-        JFrame frame = new JFrame("Tela Inicial com Tabela de Veículos e Menus");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // Cria uma instância de TelaInicialVisao
-        TelaInicialVisao tela = new TelaInicialVisao();
-
-        // Adiciona a TelaInicialVisao ao JFrame
-        frame.getContentPane().add(tela);
-
-        // Configura o tamanho, centraliza e torna visível o JFrame
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
     }
-}
+
