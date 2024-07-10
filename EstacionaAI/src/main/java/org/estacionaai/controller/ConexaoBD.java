@@ -37,16 +37,5 @@ public class ConexaoBD {
         }
     }
 
-    public static void main(String[] args) {
 
-        Connection conn = ConexaoBD.getConexaoBD();
-        if (conn != null) {
-            System.out.println("Conexão estabelecida com sucesso!");
-        } else {
-            System.err.println("Falha ao estabelecer conexão.");
-        }
-
-        // Fecha a conexão com o banco de dados
-        ConexaoBD.closeConexaoBD();
-    }
 }

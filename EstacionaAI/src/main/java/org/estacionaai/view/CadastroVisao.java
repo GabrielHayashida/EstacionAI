@@ -1,14 +1,13 @@
 package org.estacionaai.view;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class CadastroVisao {
+public class CadastroVisao extends JFrame {
     private JTextField txtUsername;
     private JTextField txtEmail;
     private JPasswordField txtPassword;
@@ -16,14 +15,18 @@ public class CadastroVisao {
     private JButton cmdLogin;
 
     public CadastroVisao() {
-        initUI();
-    }
+        super("Login EstacionAI");
 
-    private void initUI() {
-        JFrame frame = new JFrame("Login EstacionAI");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        try {
+            // Define FlatLaf como o Look and Feel
+            UIManager.setLookAndFeel(new FlatMacDarkLaf());
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel panel = new JPanel(new MigLayout("fill, insets 20", "[center]", "[center]"));
-        frame.getContentPane().add(panel);
+        getContentPane().add(panel);
 
         // Components initialization
         txtUsername = new JTextField(20);
@@ -32,7 +35,6 @@ public class CadastroVisao {
         txtConfirmPassword = new JPasswordField(20);
 
         cmdLogin = new JButton("Login");
-
 
         txtUsername.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Digite Seu Nome");
         txtEmail.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Digite Seu Email");
@@ -66,19 +68,12 @@ public class CadastroVisao {
 
         panel.add(cmdLogin, "span, align center");
 
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 
     public static void main(String[] args) {
-        try {
-            // Define FlatLaf como o Look and Feel
-            UIManager.setLookAndFeel(new FlatMacDarkLaf());
-
-        } catch (UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
-        }
         SwingUtilities.invokeLater(() -> {
             new CadastroVisao();
         });
