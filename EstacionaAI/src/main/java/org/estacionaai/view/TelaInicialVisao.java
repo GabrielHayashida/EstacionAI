@@ -2,9 +2,9 @@ package org.estacionaai.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import org.estacionaai.controller.VeiculoController;
-import org.estacionaai.model.DAO.VeiculoDAO;
+import org.estacionaai.model.DTO.VeiculoDTO;
 import org.estacionaai.model.VO.VeiculoVO;
-import org.estacionaai.view.TabelaVeiculosVisao;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -52,19 +52,19 @@ public class TelaInicialVisao extends JPanel{
 
     private void criarTabelaVeiculos() {
         // Dados da tabela
-        VeiculoDAO veiculoDAO = new VeiculoDAO();
+        VeiculoDTO veiculoDAO = new VeiculoDTO();
         this.controller = new VeiculoController(veiculoDAO);
         ArrayList<VeiculoVO> veiculos = controller.getVeiculos();
 
         // Cabeçalho da tabela
-        String[] colunas = {"Placa", "Modelo", "Cor", "Vaga Ocupada"};
+        String[] colunas = {"Placa", "Modelo", "Cor", "Ano","Id Cliente"};
 
         // Modelo da tabela
         DefaultTableModel model = new DefaultTableModel(colunas, 0);
 
         // Preenche o modelo com os dados dos veículos
         for (VeiculoVO veiculo : veiculos) {
-            Object[] rowData = {veiculo.getPlaca(), veiculo.getModelo(), veiculo.getCor(), veiculo.isVaga()};
+            Object[] rowData = {veiculo.getPlaca(), veiculo.getModelo(), veiculo.getCor(), veiculo.getAno(),veiculo.getId_cliente()};
             model.addRow(rowData);
         }
 
@@ -90,7 +90,7 @@ public class TelaInicialVisao extends JPanel{
                 }
 
                 // Cria um VeiculoDAO para passar para a TelaInicialVisao
-                VeiculoDAO veiculoDAO = new VeiculoDAO();
+                VeiculoDTO veiculoDAO = new VeiculoDTO();
 
                 // Cria um JFrame para exibir a tela
                 JFrame frame = new JFrame("Tela Inicial com JTable");

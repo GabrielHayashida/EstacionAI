@@ -11,6 +11,8 @@ public class VeiculoVO {
     private String placa;
     private String modelo;
     private String cor;
-    private boolean vaga;
+    private int ano;
+    private int id_cliente;
+
 
 }
