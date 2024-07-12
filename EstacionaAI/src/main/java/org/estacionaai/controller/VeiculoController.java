@@ -19,11 +19,11 @@ public class VeiculoController {
     }
 
     public VeiculoVO getVeiculoById(String placa) {
-        return veiculoDAO.getVeiculosById(placa);
+        return veiculoDAO.getVeiculoById(placa);
     }
 
     public boolean updateVeiculo(VeiculoVO veiculoVO) {
-        return veiculoDAO.updateVeiculos(veiculoVO);
+        return veiculoDAO.updateVeiculo(veiculoVO);
     }
 
     public boolean insertVeiculo(VeiculoVO veiculoVO) {

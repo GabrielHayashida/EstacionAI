@@ -12,25 +12,19 @@ public class VagaDTO {
         ArrayList<VagaVO> vagas = new ArrayList<>();
         String comandoSQL = "SELECT * FROM vaga";
 
-        try {
-            Statement comando = ConexaoBD.getConexaoBD().createStatement();
-            ResultSet resultado = comando.executeQuery(comandoSQL);
+        try (Connection conexao = ConexaoBD.getConexaoBD();
+             PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
+
+            ResultSet resultado = comando.executeQuery();
 
             while (resultado.next()) {
                 VagaVO vagaVO = new VagaVO();
-
-
                 vagaVO.setId(resultado.getInt("id"));
                 vagaVO.setNumero(resultado.getInt("numero"));
                 vagaVO.setSetor(resultado.getString("setor"));
                 vagaVO.setTipo(resultado.getString("tipo"));
-
-
-
                 vagas.add(vagaVO);
             }
-
-
 
         } catch (SQLException e) {
             System.err.println("Erro ao executar consulta SQL: " + e.getMessage());
@@ -38,10 +32,10 @@ public class VagaDTO {
         }
 
         return vagas;
-
     }
-    public boolean updateVagas(VagaVO vagaVO){
-        String comandoSQL = "UPDATE vaga SET  numero = ?, setor = ?, tipo = ?  WHERE id = ?";
+
+    public boolean updateVaga(VagaVO vagaVO) {
+        String comandoSQL = "UPDATE vaga SET numero = ?, setor = ?, tipo = ? WHERE id = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
@@ -51,9 +45,7 @@ public class VagaDTO {
             comando.setString(3, vagaVO.getTipo());
             comando.setInt(4, vagaVO.getId());
 
-
             int resultado = comando.executeUpdate();
-
             return resultado != 0;
 
         } catch (SQLException e) {
@@ -62,6 +54,7 @@ public class VagaDTO {
             return false;
         }
     }
+
     public boolean insertVaga(VagaVO vagaVO) {
         String comandoSQL = "INSERT INTO vaga (id, numero, setor, tipo) VALUES (?, ?, ?, ?)";
 
@@ -73,9 +66,7 @@ public class VagaDTO {
             comando.setString(3, vagaVO.getSetor());
             comando.setString(4, vagaVO.getTipo());
 
-
             int resultado = comando.executeUpdate();
-
             return resultado != 0;
 
         } catch (SQLException e) {
@@ -84,16 +75,16 @@ public class VagaDTO {
             return false;
         }
     }
-    public boolean deleteVaga(String id) {
+
+    public boolean deleteVaga(int id) {
         String comandoSQL = "DELETE FROM vaga WHERE id = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
 
-            comando.setString(1, id);
+            comando.setInt(1, id);
 
             int resultado = comando.executeUpdate();
-
             return resultado != 0;
 
         } catch (SQLException e) {
@@ -102,6 +93,7 @@ public class VagaDTO {
             return false;
         }
     }
+
 
 
 

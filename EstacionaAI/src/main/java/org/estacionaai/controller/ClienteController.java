@@ -1,5 +1,6 @@
 package org.estacionaai.controller;
 
+
 import org.estacionaai.model.DTO.ClienteDTO;
 import org.estacionaai.model.VO.ClienteVO;
 
@@ -12,23 +13,24 @@ public class ClienteController {
         this.clienteDTO = new ClienteDTO();
     }
 
-    public ArrayList<ClienteVO> getTodosClientes() {
+    public ArrayList<ClienteVO> listarClientes() {
         return clienteDTO.getClientes();
     }
 
-    public ClienteVO getClientePorId(int id) {
+    public ClienteVO buscarClientePorId(int id) {
         return clienteDTO.getClienteById(id);
-    }
-
-    public boolean adicionarCliente(ClienteVO clienteVO) {
-        return clienteDTO.insertCliente(clienteVO);
     }
 
     public boolean atualizarCliente(ClienteVO clienteVO) {
         return clienteDTO.updateCliente(clienteVO);
     }
 
-    public boolean removerCliente(int id) {
+    public boolean inserirCliente(ClienteVO clienteVO) {
+        return clienteDTO.insertCliente(clienteVO);
+    }
+
+    public boolean deletarCliente(int id) {
         return clienteDTO.deleteCliente(id);
     }
+
 }

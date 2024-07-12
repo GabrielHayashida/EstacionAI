@@ -11,7 +11,7 @@ public class ConexaoBD {
     private ConexaoBD() {}
 
     public static Connection getConexaoBD() {
-        if (conexao == null) {
+        if (conexao == null || isConnectionClosed(conexao)) {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 conexao = DriverManager.getConnection("jdbc:mysql://localhost/estacionai", "root", "");
@@ -19,7 +19,7 @@ public class ConexaoBD {
                 System.err.println("Erro ao carregar o driver, verifique o arquivo hsqldb.jar no classpath");
                 e.printStackTrace();
             } catch (SQLException e) {
-                System.err.println("Erro ao realizar conexao com o banco, verifique a URL de conexão");
+                System.err.println("Erro ao realizar conexão com o banco, verifique a URL de conexão");
                 e.printStackTrace();
             }
         }
@@ -37,5 +37,13 @@ public class ConexaoBD {
         }
     }
 
-
+    private static boolean isConnectionClosed(Connection conn) {
+        try {
+            return conn == null || conn.isClosed();
+        } catch (SQLException e) {
+            System.err.println("Erro ao verificar se a conexão está fechada");
+            e.printStackTrace();
+            return true;
+        }
+    }
 }

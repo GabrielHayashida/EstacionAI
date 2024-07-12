@@ -19,7 +19,7 @@ public class VagaController {
     }
 
     public boolean updateVaga(VagaVO vagaVO) {
-        return vagaDAO.updateVagas(vagaVO);
+        return vagaDAO.updateVaga(vagaVO);
     }
 
     public boolean insertVaga(VagaVO vagaVO) {
@@ -27,6 +27,6 @@ public class VagaController {
     }
 
     public boolean deleteVaga(String id) {
-        return vagaDAO.deleteVaga(id);
+        return vagaDAO.deleteVaga(Integer.parseInt(id));
     }
 }

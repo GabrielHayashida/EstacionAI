@@ -13,9 +13,9 @@ public class VeiculoDTO {
         ArrayList<VeiculoVO> veiculos = new ArrayList<>();
         String comandoSQL = "SELECT * FROM veiculo";
 
-        try {
-            Statement comando = ConexaoBD.getConexaoBD().createStatement();
-            ResultSet resultado = comando.executeQuery(comandoSQL);
+        try (Connection conexao = ConexaoBD.getConexaoBD();
+             Statement comando = conexao.createStatement();
+             ResultSet resultado = comando.executeQuery(comandoSQL)) {
 
             while (resultado.next()) {
                 VeiculoVO veiculoVO = new VeiculoVO();
@@ -26,11 +26,8 @@ public class VeiculoDTO {
                 veiculoVO.setAno(resultado.getInt("ano"));
                 veiculoVO.setId_cliente(resultado.getInt("id_cliente"));
 
-
                 veiculos.add(veiculoVO);
             }
-
-
 
         } catch (SQLException e) {
             System.err.println("Erro ao executar consulta SQL: " + e.getMessage());
@@ -38,11 +35,11 @@ public class VeiculoDTO {
         }
 
         return veiculos;
-
     }
-    public VeiculoVO getVeiculosById(String placa) {
+
+    public VeiculoVO getVeiculoById(String placa) {
         VeiculoVO veiculoVO = null;
-        String comandoSQL = "SELECT * FROM veiculo WHERE veiculo.placa = ?";
+        String comandoSQL = "SELECT * FROM veiculo WHERE placa = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
@@ -61,15 +58,16 @@ public class VeiculoDTO {
                 System.err.println("Nenhum veículo encontrado com a placa: " + placa);
             }
 
-
         } catch (SQLException e) {
             System.err.println("Erro ao executar consulta SQL: " + e.getMessage());
             e.printStackTrace();
         }
+
         return veiculoVO;
     }
-    public boolean updateVeiculos(VeiculoVO veiculoVO){
-        String comandoSQL = "UPDATE veiculos SET modelo = ?, cor = ?, ano = ? id_cliente = ?  WHERE placa = ?";
+
+    public boolean updateVeiculo(VeiculoVO veiculoVO) {
+        String comandoSQL = "UPDATE veiculo SET modelo = ?, cor = ?, ano = ?, id_cliente = ? WHERE placa = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
@@ -90,6 +88,7 @@ public class VeiculoDTO {
             return false;
         }
     }
+
     public boolean insertVeiculo(VeiculoVO veiculoVO) {
         String comandoSQL = "INSERT INTO veiculo (placa, modelo, cor, ano, id_cliente) VALUES (?, ?, ?, ?, ?)";
 
@@ -112,6 +111,7 @@ public class VeiculoDTO {
             return false;
         }
     }
+
     public boolean deleteVeiculo(String placa) {
         String comandoSQL = "DELETE FROM veiculo WHERE placa = ?";
 
@@ -130,5 +130,6 @@ public class VeiculoDTO {
             return false;
         }
     }
+
 
 }
