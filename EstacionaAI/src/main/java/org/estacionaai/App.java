@@ -1,13 +1,12 @@
 package org.estacionaai;
 
-/**
- * Hello world!
- *
- */
-public class App 
+import org.estacionaai.model.DTO.VeiculoDTO;
+import org.estacionaai.model.VO.VeiculoVO;
+
+import java.util.ArrayList;
+public class App
 {
-    public static void main( String[] args )
-    {
-        System.out.println( "Hello World!" );
+    public static void main(String[] args) {
+
     }
 }

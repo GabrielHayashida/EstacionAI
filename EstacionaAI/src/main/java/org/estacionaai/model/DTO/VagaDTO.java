@@ -102,4 +102,7 @@ public class VagaDTO {
             return false;
         }
     }
+
+
+
 }
