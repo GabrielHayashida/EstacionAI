@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @Setter
 public class ReservaVO {
     private int id;
-    private VeiculoVO veiculo;
-    private VagaVO vaga;
+    private String placa_veiculo;
+    private int id_vaga;
     private LocalDateTime data_entrada;
     private LocalDateTime data_saida;
 
