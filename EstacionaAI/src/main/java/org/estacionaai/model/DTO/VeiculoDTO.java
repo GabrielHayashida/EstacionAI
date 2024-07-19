@@ -9,23 +9,29 @@ import java.util.ArrayList;
 
 public class VeiculoDTO {
 
-    public ArrayList<VeiculoVO> getVeiculos() {
+    public ArrayList<VeiculoVO> getVeiculos(String pesquisa) {
         ArrayList<VeiculoVO> veiculos = new ArrayList<>();
-        String comandoSQL = "SELECT * FROM veiculo";
+        String comandoSQL = "SELECT * FROM veiculo WHERE placa LIKE ? OR modelo LIKE ? OR cor LIKE ? OR ano LIKE ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
-             Statement comando = conexao.createStatement();
-             ResultSet resultado = comando.executeQuery(comandoSQL)) {
+             PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
+
+            // Preparar o parâmetro de pesquisa
+            String pesquisaLike = "%" + pesquisa + "%";
+            comando.setString(1, pesquisaLike);
+            comando.setString(2, pesquisaLike);
+            comando.setString(3, pesquisaLike);
+            comando.setString(4, pesquisa);
+
+            ResultSet resultado = comando.executeQuery();
 
             while (resultado.next()) {
                 VeiculoVO veiculoVO = new VeiculoVO();
-
                 veiculoVO.setPlaca(resultado.getString("placa"));
                 veiculoVO.setModelo(resultado.getString("modelo"));
                 veiculoVO.setCor(resultado.getString("cor"));
                 veiculoVO.setAno(resultado.getInt("ano"));
                 veiculoVO.setId_cliente(resultado.getInt("id_cliente"));
-
                 veiculos.add(veiculoVO);
             }
 

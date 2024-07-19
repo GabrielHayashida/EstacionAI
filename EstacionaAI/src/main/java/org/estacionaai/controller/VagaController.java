@@ -8,25 +8,25 @@ import java.util.ArrayList;
 
 @NoArgsConstructor
 public class VagaController {
-    private VagaDTO vagaDAO;
+    private VagaDTO vagaDTO;
 
-    public VagaController(VagaDTO vagaDAO) {
-        this.vagaDAO = vagaDAO;
+    public VagaController(VagaDTO vagaDTO) {
+        this.vagaDTO = vagaDTO;
     }
 
-    public ArrayList<VagaVO> getVaga() {
-        return vagaDAO.getVagas();
+    public ArrayList<VagaVO> getVagas(String pesquisa) {
+        return vagaDTO.getVagas(pesquisa);
     }
 
     public boolean updateVaga(VagaVO vagaVO) {
-        return vagaDAO.updateVaga(vagaVO);
+        return vagaDTO.updateVaga(vagaVO);
     }
 
     public boolean insertVaga(VagaVO vagaVO) {
-        return vagaDAO.insertVaga(vagaVO);
+        return vagaDTO.insertVaga(vagaVO);
     }
 
     public boolean deleteVaga(String id) {
-        return vagaDAO.deleteVaga(Integer.parseInt(id));
+        return vagaDTO.deleteVaga(Integer.parseInt(id));
     }
 }

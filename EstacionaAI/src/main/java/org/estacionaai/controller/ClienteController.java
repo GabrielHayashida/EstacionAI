@@ -9,12 +9,12 @@ import java.util.ArrayList;
 public class ClienteController {
     private ClienteDTO clienteDTO;
 
-    public ClienteController() {
-        this.clienteDTO = new ClienteDTO();
+    public ClienteController(ClienteDTO clienteDTO) {
+        this.clienteDTO = clienteDTO;
     }
 
-    public ArrayList<ClienteVO> listarClientes() {
-        return clienteDTO.getClientes();
+    public ArrayList<ClienteVO> listarClientes(String pesquisa) {
+        return clienteDTO.getClientes(pesquisa);
     }
 
     public ClienteVO buscarClientePorId(int id) {

@@ -1,112 +1,150 @@
 package org.estacionaai.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import org.estacionaai.controller.ClienteController;
+import org.estacionaai.controller.ReservaController;
+import org.estacionaai.controller.VagaController;
 import org.estacionaai.controller.VeiculoController;
+import org.estacionaai.model.DTO.ClienteDTO;
+import org.estacionaai.model.DTO.ReservaDTO;
+import org.estacionaai.model.DTO.VagaDTO;
 import org.estacionaai.model.DTO.VeiculoDTO;
-import org.estacionaai.model.VO.VeiculoVO;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.ArrayList;
 
+public class TelaInicialVisao extends JFrame {
 
-public class TelaInicialVisao extends JPanel{
-    private JTable tabela;
-    private VeiculoController controller;
+    private JDesktopPane desktopPane;
+
     public TelaInicialVisao() {
-        // Define o layout da tela inicial
-        setLayout(new BorderLayout());
 
-        // Cria a barra de menu com os menus Vagas e Usuário
-        JMenuBar menuBar = criarBarraMenu();
-        add(menuBar, BorderLayout.NORTH);
+        try {
+            UIManager.setLookAndFeel(new FlatDarkLaf());
 
-        // Cria a tabela de veículos
-        criarTabelaVeiculos();
-    }private JMenuBar criarBarraMenu() {
-        // Cria o menu Vagas
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        setTitle("Tela Inicial");
+        setSize(1280, 720);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setResizable(false);
+
+
+        setJMenuBar(criarBarraMenu());
+
+
+        desktopPane = new JDesktopPane();
+        JPanel painelPrincipal = new JPanel(new BorderLayout());
+        painelPrincipal.add(new JLabel("Bem-vindo ao Sistema EstacionaAI!", SwingConstants.CENTER), BorderLayout.CENTER);
+        painelPrincipal.add(desktopPane, BorderLayout.CENTER);
+        add(painelPrincipal);
+
+
+        setVisible(true);
+    }
+
+    private JMenuBar criarBarraMenu() {
+
         JMenu menuVagas = new JMenu("Vagas");
         JMenuItem vagasDisponiveis = new JMenuItem("Vagas Disponíveis");
-        JMenuItem vagasOcupadas = new JMenuItem("Vagas Ocupadas");
+        JMenuItem reservas = new JMenuItem("Reservas");
+        reservas.addActionListener(e->mostrarTabelaReservas());
+        vagasDisponiveis.addActionListener(e -> mostrarTabelaVagas());
         menuVagas.add(vagasDisponiveis);
-        menuVagas.add(vagasOcupadas);
+        menuVagas.add(reservas);
 
-        // Cria o menu Usuário
+
         JMenu menuUsuario = new JMenu("Usuário");
-        JMenuItem editarConta = new JMenuItem("Editar Conta");
+        JMenuItem clientes = new JMenuItem("Clientes");
         JMenuItem configuracoes = new JMenuItem("Configurações");
         JMenuItem sair = new JMenuItem("Sair");
-        menuUsuario.add(editarConta);
+        clientes.addActionListener(e->mostrarTabelaClientes());
+        menuUsuario.add(clientes);
         menuUsuario.add(configuracoes);
         menuUsuario.addSeparator();
         menuUsuario.add(sair);
 
-        // Cria a barra de menu
+
+        JMenu menuVeiculos = new JMenu("Veículos");
+        JMenuItem mostrarVeiculos = new JMenuItem("Mostrar Veículos");
+        mostrarVeiculos.addActionListener(e -> mostrarTabelaVeiculos());
+        menuVeiculos.add(mostrarVeiculos);
+
+
+
+
+
+
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(menuVagas);
         menuBar.add(menuUsuario);
+        menuBar.add(menuVeiculos);
 
         return menuBar;
     }
 
-    private void criarTabelaVeiculos() {
-        // Dados da tabela
-        VeiculoDTO veiculoDAO = new VeiculoDTO();
-        this.controller = new VeiculoController(veiculoDAO);
-        ArrayList<VeiculoVO> veiculos = controller.getVeiculos();
+    private void mostrarTabelaVagas() {
+        VagaDTO vagaDTO = new VagaDTO();
+        VagaController controller = new VagaController(vagaDTO);
+        TabelaVagasVisao tabelaVagasVisao = new TabelaVagasVisao(controller);
+        desktopPane.add(tabelaVagasVisao);
+        tabelaVagasVisao.setVisible(true);
+        Dimension desktopSize = desktopPane.getSize();
+        Dimension jInternalFrameSize = tabelaVagasVisao.getSize();
+        int x = (desktopSize.width - jInternalFrameSize.width) / 2;
+        int y = (desktopSize.height - jInternalFrameSize.height) / 2;
+        tabelaVagasVisao.setLocation(x, y);
 
-        // Cabeçalho da tabela
-        String[] colunas = {"Placa", "Modelo", "Cor", "Ano","Id Cliente"};
-
-        // Modelo da tabela
-        DefaultTableModel model = new DefaultTableModel(colunas, 0);
-
-        // Preenche o modelo com os dados dos veículos
-        for (VeiculoVO veiculo : veiculos) {
-            Object[] rowData = {veiculo.getPlaca(), veiculo.getModelo(), veiculo.getCor(), veiculo.getAno(),veiculo.getId_cliente()};
-            model.addRow(rowData);
-        }
-
-        // Criando a tabela com o modelo
-        tabela = new JTable(model);
-        tabela.setPreferredScrollableViewportSize(new Dimension(400, 200));
-        tabela.setFillsViewportHeight(true);
-
-        // Adicionando a tabela a um JScrollPane
-        JScrollPane scrollPane = new JScrollPane(tabela);
-
-        // Adicionando o JScrollPane ao layout da JPanel
-        add(scrollPane, BorderLayout.CENTER);
     }
 
-        public static void main (String[]args){
-            SwingUtilities.invokeLater(() -> {
-                try {
-                    // Define FlatLaf como o Look and Feel
-                    UIManager.setLookAndFeel(new FlatDarkLaf());
-                } catch (UnsupportedLookAndFeelException e) {
-                    e.printStackTrace();
-                }
-
-                // Cria um VeiculoDAO para passar para a TelaInicialVisao
-                VeiculoDTO veiculoDAO = new VeiculoDTO();
-
-                // Cria um JFrame para exibir a tela
-                JFrame frame = new JFrame("Tela Inicial com JTable");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-                // Instancia a tela inicial
-                TelaInicialVisao telaInicial = new TelaInicialVisao();
-
-                // Adiciona a tela inicial ao frame
-                frame.getContentPane().add(telaInicial);
-
-                frame.pack();
-                frame.setLocationRelativeTo(null); // Centraliza a janela na tela
-                frame.setVisible(true);
-            });
-
-        }
+    private void mostrarTabelaClientes() {
+        ClienteDTO clienteDTO = new ClienteDTO();
+        ClienteController controller = new ClienteController(clienteDTO);
+        TabelaClienteVisao tabelaClienteVisao = new TabelaClienteVisao(controller);
+        desktopPane.add(tabelaClienteVisao);
+        tabelaClienteVisao.setVisible(true);
+        Dimension desktopSize = desktopPane.getSize();
+        Dimension jInternalFrameSize = tabelaClienteVisao.getSize();
+        int x = (desktopSize.width - jInternalFrameSize.width) / 2;
+        int y = (desktopSize.height - jInternalFrameSize.height) / 2;
+        tabelaClienteVisao.setLocation(x, y);
     }
 
+    private void mostrarTabelaReservas() {
+        ReservaDTO reservaDTO = new ReservaDTO();
+        ReservaController controller = new ReservaController(reservaDTO);
+        TabelaReservaVisao tabelaReservaVisao = new TabelaReservaVisao(controller);
+        desktopPane.add(tabelaReservaVisao);
+        tabelaReservaVisao.setVisible(true);
+        Dimension desktopSize = desktopPane.getSize();
+        Dimension jInternalFrameSize = tabelaReservaVisao.getSize();
+        int x = (desktopSize.width - jInternalFrameSize.width) / 2;
+        int y = (desktopSize.height - jInternalFrameSize.height) / 2;
+        tabelaReservaVisao.setLocation(x, y);
+    }
+
+    private void mostrarTabelaVeiculos() {
+        VeiculoDTO veiculoDTO = new VeiculoDTO();
+        VeiculoController controller = new VeiculoController(veiculoDTO);
+
+        // Passa o controlador para a TabelaVeiculosVisao
+        TabelaVeiculosVisao tabelaVeiculosVisao = new TabelaVeiculosVisao(controller);
+        desktopPane.add(tabelaVeiculosVisao);
+        tabelaVeiculosVisao.setVisible(true);
+        Dimension desktopSize = desktopPane.getSize();
+        Dimension jInternalFrameSize = tabelaVeiculosVisao.getSize();
+        int x = (desktopSize.width - jInternalFrameSize.width) / 2;
+        int y = (desktopSize.height - jInternalFrameSize.height) / 2;
+        tabelaVeiculosVisao.setLocation(x, y);
+    }
+
+    public static void main(String[] args) {
+        // Executa a interface em um thread de eventos de interface gráfica
+        SwingUtilities.invokeLater(() -> new TelaInicialVisao());
+    }
+}

@@ -12,12 +12,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ReservaDTO {
-    public ArrayList<ReservaVO> getReservas() {
+    public ArrayList<ReservaVO> getReservas(String pesquisa) {
         ArrayList<ReservaVO> reservas = new ArrayList<>();
-        String comandoSQL = "SELECT * FROM reserva";
+        String comandoSQL = "SELECT * FROM reserva WHERE placa_veiculo LIKE ? OR id_vaga LIKE ? OR data_entrada LIKE ? OR data_saida LIKE ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
+
+            // Preparar o parâmetro de pesquisa
+            String pesquisaLike = "%" + pesquisa + "%";
+            comando.setString(1, pesquisaLike);
+            comando.setString(2, pesquisaLike);
+            comando.setString(3, pesquisaLike);
+            comando.setString(4, pesquisaLike);
 
             ResultSet resultado = comando.executeQuery();
 

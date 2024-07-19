@@ -8,13 +8,16 @@ import java.util.ArrayList;
 
 public class ClienteDTO {
 
-    public ArrayList<ClienteVO> getClientes() {
+    public ArrayList<ClienteVO> getClientes(String pesquisa) {
         ArrayList<ClienteVO> clientes = new ArrayList<>();
-        String comandoSQL = "SELECT * FROM cliente";
+        String comandoSQL = "SELECT * FROM cliente where nome like ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
-             Statement comando = conexao.createStatement();
-             ResultSet resultado = comando.executeQuery(comandoSQL)) {
+             PreparedStatement comando =  conexao.prepareStatement(comandoSQL)){
+
+            comando.setString(1, "%" + pesquisa + "%");
+            ResultSet resultado = comando.executeQuery();
+
 
             while (resultado.next()) {
                 ClienteVO clienteVO = new ClienteVO();

@@ -8,29 +8,28 @@ import java.util.ArrayList;
 
 @NoArgsConstructor
 public class VeiculoController {
-    private VeiculoDTO veiculoDAO;
+    private VeiculoDTO veiculoDTO;
 
     public VeiculoController(VeiculoDTO veiculoDAO) {
-        this.veiculoDAO = veiculoDAO;
+        this.veiculoDTO = veiculoDAO;
     }
 
-    public ArrayList<VeiculoVO> getVeiculos() {
-        return veiculoDAO.getVeiculos();
+    public ArrayList<VeiculoVO> getVeiculos(String pesquisa) {
+        return veiculoDTO.getVeiculos(pesquisa);
     }
-
     public VeiculoVO getVeiculoById(String placa) {
-        return veiculoDAO.getVeiculoById(placa);
+        return veiculoDTO.getVeiculoById(placa);
     }
 
     public boolean updateVeiculo(VeiculoVO veiculoVO) {
-        return veiculoDAO.updateVeiculo(veiculoVO);
+        return veiculoDTO.updateVeiculo(veiculoVO);
     }
 
     public boolean insertVeiculo(VeiculoVO veiculoVO) {
-        return veiculoDAO.insertVeiculo(veiculoVO);
+        return veiculoDTO.insertVeiculo(veiculoVO);
     }
 
     public boolean deleteVeiculo(String placa) {
-        return veiculoDAO.deleteVeiculo(placa);
+        return veiculoDTO.deleteVeiculo(placa);
     }
 }

@@ -8,12 +8,18 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class VagaDTO {
-    public ArrayList<VagaVO> getVagas() {
+    public ArrayList<VagaVO> getVagas(String pesquisa) {
         ArrayList<VagaVO> vagas = new ArrayList<>();
-        String comandoSQL = "SELECT * FROM vaga";
+        String comandoSQL = "SELECT * FROM vaga WHERE numero LIKE ? OR setor LIKE ? OR tipo LIKE ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
+
+            // Preparar o parâmetro de pesquisa
+            String pesquisaLike = "%" + pesquisa + "%";
+            comando.setString(1, pesquisaLike);
+            comando.setString(2, pesquisaLike);
+            comando.setString(3, pesquisaLike);
 
             ResultSet resultado = comando.executeQuery();
 

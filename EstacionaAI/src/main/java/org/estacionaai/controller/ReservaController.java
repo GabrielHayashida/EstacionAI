@@ -12,7 +12,9 @@ public class ReservaController {
     
     public ReservaController(ReservaDTO reservaDTO) {this.reservaDTO = reservaDTO;}
 
-    public ArrayList<ReservaVO> getReservas(){return reservaDTO.getReservas();}
+    public ArrayList<ReservaVO> getReservas(String pesquisa) {
+        return reservaDTO.getReservas(pesquisa);
+    }
 
     public ReservaVO getReservaById(int id){return reservaDTO.getReservaById(id);}
 
