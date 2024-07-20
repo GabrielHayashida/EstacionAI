@@ -1,10 +1,11 @@
 package org.estacionaai.view;
 
-import org.estacionaai.controller.VeiculoController;
-import org.estacionaai.model.VO.VeiculoVO;
-import org.estacionaai.view.dialogs.EditarVeiculoDialog;
+import org.estacionaai.controller.ClienteController;
+import org.estacionaai.model.VO.ClienteVO;
+import org.estacionaai.view.dialogs.EditarClienteDialog;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,25 +14,26 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
-public class TabelaVeiculosVisao extends JInternalFrame {
+public class TabelaClienteVisao extends JInternalFrame {
 
     private JTable tabela;
     private JTextField txtSearch;
-    private JButton buttonEditVeiculo;
-    private JButton buttonDelVeiculo;
-    private VeiculoController controller;
-    private ArrayList<VeiculoVO> veiculos;
 
-    public TabelaVeiculosVisao(VeiculoController controller) {
+    private JButton buttonEditCliente;
+    private JButton buttonDelCliente;
+    private ClienteController controller;
+    private ArrayList<ClienteVO> clientes;
 
-        // Configurações do JInternalFrame
-        super("Gerenciamento de Veículos", true, true, false, true);
-        setSize(600, 400);
+    public TabelaClienteVisao(ClienteController controller) {
+        super("Gerenciamento de Clientes", true, true, false, true);
+        setSize(800, 600);
         setLayout(new BorderLayout());
         this.controller = controller;
 
+
+
         initComponents();
-        criarTabelaVeiculos();
+        criarTabelaCliente();
         atualizaTabela();
     }
 
@@ -47,11 +49,13 @@ public class TabelaVeiculosVisao extends JInternalFrame {
         topPanel.add(new JLabel("Pesquisar:"));
         topPanel.add(txtSearch);
 
-        buttonEditVeiculo = new JButton("Editar");
-        buttonDelVeiculo = new JButton("Deletar");
 
-        topPanel.add(buttonEditVeiculo);
-        topPanel.add(buttonDelVeiculo);
+        buttonEditCliente = new JButton("Editar");
+        buttonDelCliente = new JButton("Deletar");
+
+
+        topPanel.add(buttonEditCliente);
+        topPanel.add(buttonDelCliente);
 
         panel.add(topPanel, BorderLayout.NORTH);
 
@@ -72,23 +76,25 @@ public class TabelaVeiculosVisao extends JInternalFrame {
             }
         });
 
-        buttonEditVeiculo.addActionListener(new ActionListener() {
+
+
+        buttonEditCliente.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                editarVeiculo();
+                editarCliente();
             }
         });
 
-        buttonDelVeiculo.addActionListener(new ActionListener() {
+        buttonDelCliente.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                deletarVeiculo();
+                deletarCliente();
             }
         });
     }
 
-    private void criarTabelaVeiculos() {
-        String[] colunas = {"Placa", "Modelo", "Cor", "Ano", "ID Cliente"};
+    private void criarTabelaCliente() {
+        String[] colunas = {"ID", "Nome", "Telefone", "Email", "Endereço"};
         DefaultTableModel modelo = new DefaultTableModel(colunas, 0);
         tabela.setModel(modelo);
     }
@@ -97,49 +103,52 @@ public class TabelaVeiculosVisao extends JInternalFrame {
         DefaultTableModel modelo = (DefaultTableModel) tabela.getModel();
         modelo.setRowCount(0);
 
-        String pesquisa = txtSearch.getText();
-        veiculos = controller.getVeiculos(pesquisa);
 
-        for (VeiculoVO veiculo : veiculos) {
+        String pesquisa = txtSearch.getText();
+        clientes = controller.listarClientes(pesquisa);
+
+        for (ClienteVO cliente : clientes) {
             Object[] linha = {
-                    veiculo.getPlaca(),
-                    veiculo.getModelo(),
-                    veiculo.getCor(),
-                    veiculo.getAno(),
-                    veiculo.getId_cliente()
+                    cliente.getId(),
+                    cliente.getNome(),
+                    cliente.getTelefone(),
+                    cliente.getEmail(),
+                    cliente.getEndereco()
             };
             modelo.addRow(linha);
         }
     }
 
-    private void editarVeiculo() {
+
+
+    private void editarCliente() {
         if (tabela.getSelectedRowCount() == 1) {
             int selectedRow = tabela.getSelectedRow();
-            VeiculoVO veiculo = veiculos.get(selectedRow);
+            ClienteVO cliente = clientes.get(selectedRow);
 
-            EditarVeiculoDialog dialog = new EditarVeiculoDialog((Frame) SwingUtilities.getWindowAncestor(this), controller, veiculo);
+            EditarClienteDialog dialog = new EditarClienteDialog((Frame) SwingUtilities.getWindowAncestor(this), controller, cliente);
             dialog.setVisible(true);
 
             if (dialog.isUpdated()) {
                 atualizaTabela();
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Selecione um veículo para editar.");
+            JOptionPane.showMessageDialog(this, "Selecione um cliente para editar.");
         }
     }
 
-    private void deletarVeiculo() {
+    private void deletarCliente() {
         if (tabela.getSelectedRowCount() == 1) {
             int selectedRow = tabela.getSelectedRow();
-            VeiculoVO veiculo = veiculos.get(selectedRow);
-            int resposta = JOptionPane.showConfirmDialog(this, "Você tem certeza que deseja excluir o veículo com placa " + veiculo.getPlaca() + "?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
+            ClienteVO cliente = clientes.get(selectedRow);
+            int resposta = JOptionPane.showConfirmDialog(this, "Você tem certeza que deseja excluir o cliente " + cliente.getNome() + "?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
             if (resposta == JOptionPane.YES_OPTION) {
-                // Implementar lógica de exclusão de veículo
-                controller.deleteVeiculo(veiculo.getPlaca());
+                // Implementar lógica de exclusão de cliente
+                controller.deletarCliente(cliente.getId());
                 atualizaTabela();
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Selecione um veículo para excluir.");
+            JOptionPane.showMessageDialog(this, "Selecione um cliente para excluir.");
         }
     }
 }
