@@ -34,7 +34,12 @@ public class ReservaDTO {
                 reservaVO.setId_vaga(resultado.getInt("id_vaga"));
                 reservaVO.setPlaca_veiculo(resultado.getString("placa_veiculo"));
                 reservaVO.setData_entrada(resultado.getTimestamp("data_entrada").toLocalDateTime());
-                reservaVO.setData_saida(resultado.getTimestamp("data_saida").toLocalDateTime());
+                if(resultado.getTimestamp("data_saida")== null){
+                    reservaVO.setData_saida(null);
+                }else{
+                    reservaVO.setData_saida(resultado.getTimestamp("data_saida").toLocalDateTime());
+                }
+
                 reservas.add(reservaVO);
             }
 

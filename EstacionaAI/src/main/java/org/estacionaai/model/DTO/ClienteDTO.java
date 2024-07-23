@@ -2,6 +2,7 @@ package org.estacionaai.model.DTO;
 
 import org.estacionaai.controller.ConexaoBD;
 import org.estacionaai.model.VO.ClienteVO;
+import org.estacionaai.utils.CriptografiaSenha;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -105,7 +106,7 @@ public class ClienteDTO {
             comando.setString(1, clienteVO.getNome());
             comando.setString(2, clienteVO.getTelefone());
             comando.setString(3, clienteVO.getEmail());
-            comando.setString(4, clienteVO.getSenha());
+            comando.setString(4, CriptografiaSenha.criptografar(clienteVO.getSenha()));
             comando.setBoolean(5, clienteVO.isAdmin());
             comando.setString(6, clienteVO.getEndereco());
 
@@ -135,6 +136,30 @@ public class ClienteDTO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public boolean verificarCredenciais(String email, String senha) {
+        String comandoSQL = "SELECT senha FROM cliente WHERE email = ?";
+
+        try (Connection conexao = ConexaoBD.getConexaoBD();
+             PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
+
+            comando.setString(1, email);
+            ResultSet resultado = comando.executeQuery();
+
+            if (resultado.next()) {
+                String senhaCriptografada = resultado.getString("senha");
+                String senhaDescriptografada = CriptografiaSenha.descriptografar(senhaCriptografada);
+                return senha.equals(senhaDescriptografada);
+
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao executar consulta SQL: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
 }

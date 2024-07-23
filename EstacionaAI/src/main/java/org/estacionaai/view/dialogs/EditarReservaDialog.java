@@ -12,6 +12,7 @@ public class EditarReservaDialog extends JDialog {
     private JTextField txtIdVaga;
     private JTextField txtDataEntrada;
     private JTextField txtDataSaida;
+
     private JButton btnSalvar;
     private JButton btnCancelar;
     private boolean atualizado;

@@ -29,6 +29,7 @@ public class VagaDTO {
                 vagaVO.setNumero(resultado.getInt("numero"));
                 vagaVO.setSetor(resultado.getString("setor"));
                 vagaVO.setTipo(resultado.getString("tipo"));
+                vagaVO.setOcupada(resultado.getBoolean("ocupada"));
                 vagas.add(vagaVO);
             }
 
@@ -41,7 +42,7 @@ public class VagaDTO {
     }
 
     public boolean updateVaga(VagaVO vagaVO) {
-        String comandoSQL = "UPDATE vaga SET numero = ?, setor = ?, tipo = ? WHERE id = ?";
+        String comandoSQL = "UPDATE vaga SET numero = ?, setor = ?, tipo = ?, ocupada = ? WHERE id = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
@@ -49,7 +50,8 @@ public class VagaDTO {
             comando.setInt(1, vagaVO.getNumero());
             comando.setString(2, vagaVO.getSetor());
             comando.setString(3, vagaVO.getTipo());
-            comando.setInt(4, vagaVO.getId());
+            comando.setBoolean(4, vagaVO.getOcupada());
+            comando.setInt(5, vagaVO.getId());
 
             int resultado = comando.executeUpdate();
             return resultado != 0;
@@ -62,15 +64,15 @@ public class VagaDTO {
     }
 
     public boolean insertVaga(VagaVO vagaVO) {
-        String comandoSQL = "INSERT INTO vaga (id, numero, setor, tipo) VALUES (?, ?, ?, ?)";
+        String comandoSQL = "INSERT INTO vaga (numero, setor, tipo, ocupada) VALUES (?, ?, ?, ?)";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
 
-            comando.setInt(1, vagaVO.getId());
-            comando.setInt(2, vagaVO.getNumero());
-            comando.setString(3, vagaVO.getSetor());
-            comando.setString(4, vagaVO.getTipo());
+            comando.setInt(1, vagaVO.getNumero());
+            comando.setString(2, vagaVO.getSetor());
+            comando.setString(3, vagaVO.getTipo());
+            comando.setBoolean(4, vagaVO.getOcupada());
 
             int resultado = comando.executeUpdate();
             return resultado != 0;

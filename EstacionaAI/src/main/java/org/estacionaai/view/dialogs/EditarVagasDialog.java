@@ -13,6 +13,7 @@ public class EditarVagasDialog extends JDialog {
     private JTextField txtTipo;
     private JButton btnSalvar;
     private JButton btnCancelar;
+    private JCheckBox chkOcuped;
     private boolean atualizado;
     private VagaVO vaga;
 
@@ -34,7 +35,7 @@ public class EditarVagasDialog extends JDialog {
         txtNumero = new JTextField(10);
         txtSetor = new JTextField(10);
         txtTipo = new JTextField(10);
-
+        chkOcuped = new JCheckBox("Ocupada", vaga.getOcupada());
         btnSalvar = new JButton("Salvar");
         btnCancelar = new JButton("Cancelar");
 
@@ -54,13 +55,15 @@ public class EditarVagasDialog extends JDialog {
     }
 
     private JPanel criarPainelCampos() {
-        JPanel panel = new JPanel(new GridLayout(3, 2));
+        JPanel panel = new JPanel(new GridLayout(4, 2));
         panel.add(new JLabel("Número:"));
         panel.add(txtNumero);
         panel.add(new JLabel("Setor:"));
         panel.add(txtSetor);
         panel.add(new JLabel("Tipo:"));
         panel.add(txtTipo);
+        panel.add(new JLabel("Ocupada:"));
+        panel.add(chkOcuped);
         return panel;
     }
 
@@ -82,6 +85,7 @@ public class EditarVagasDialog extends JDialog {
             vaga.setNumero(Integer.parseInt(txtNumero.getText()));
             vaga.setSetor(txtSetor.getText());
             vaga.setTipo(txtTipo.getText());
+            vaga.setOcupada(chkOcuped.isSelected());
             atualizado = true;
             setVisible(false);
         } catch (NumberFormatException e) {

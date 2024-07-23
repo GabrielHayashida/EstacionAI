@@ -32,5 +32,8 @@ public class ClienteController {
     public boolean deletarCliente(int id) {
         return clienteDTO.deleteCliente(id);
     }
+    public boolean verificarCredenciais(String email, String senha) {
+        return clienteDTO.verificarCredenciais(email, senha);
+    }
 
 }

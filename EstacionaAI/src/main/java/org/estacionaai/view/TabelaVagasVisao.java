@@ -85,7 +85,7 @@ public class TabelaVagasVisao extends JInternalFrame {
     }
 
     private void criarTabelaVaga() {
-        String[] colunas = {"ID", "Número", "Setor", "Tipo"};
+        String[] colunas = {"ID", "Número", "Setor", "Tipo","Ocupada"};
         DefaultTableModel modelo = new DefaultTableModel(colunas, 0);
         tabela.setModel(modelo);
     }
@@ -102,7 +102,8 @@ public class TabelaVagasVisao extends JInternalFrame {
                     vaga.getId(),
                     vaga.getNumero(),
                     vaga.getSetor(),
-                    vaga.getTipo()
+                    vaga.getTipo(),
+                    vaga.getOcupada()
             };
             modelo.addRow(linha);
         }
@@ -132,13 +133,21 @@ public class TabelaVagasVisao extends JInternalFrame {
 
     private void deletarVaga() {
         if (tabela.getSelectedRowCount() == 1) {
-            int selectedRow = tabela.getSelectedRow();
-            VagaVO vaga = vagas.get(selectedRow);
-            int resposta = JOptionPane.showConfirmDialog(this, "Você tem certeza que deseja excluir a vaga " + vaga.getNumero() + "?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
-            if (resposta == JOptionPane.YES_OPTION) {
-                // Implementar lógica de exclusão de vaga
-                controller.deleteVaga(String.valueOf(vaga.getId()));
-                atualizaTabela();
+            try {
+                int selectedRow = tabela.getSelectedRow();
+                VagaVO vaga = vagas.get(selectedRow);
+                int resposta = JOptionPane.showConfirmDialog(this, "Você tem certeza que deseja excluir a vaga " + vaga.getNumero() + "?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
+                if (resposta == JOptionPane.YES_OPTION) {
+                    boolean sucesso = controller.deleteVaga(String.valueOf(vaga.getId()));
+                    if (sucesso) {
+                        atualizaTabela();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Não foi possível excluir a vaga. Ela pode estar referenciada em uma reserva.");
+                    }
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Erro ao tentar deletar a vaga.");
+                e.printStackTrace();
             }
         } else {
             JOptionPane.showMessageDialog(this, "Selecione uma vaga para excluir.");

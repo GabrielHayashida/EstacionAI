@@ -12,5 +12,6 @@ public class VagaVO {
     private int numero;
     private String setor;
     private String tipo;
+    private Boolean ocupada;
 
 }
