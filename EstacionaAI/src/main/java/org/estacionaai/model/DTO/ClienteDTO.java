@@ -3,6 +3,7 @@ package org.estacionaai.model.DTO;
 import org.estacionaai.controller.ConexaoBD;
 import org.estacionaai.model.VO.ClienteVO;
 import org.estacionaai.utils.CriptografiaSenha;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -148,10 +149,10 @@ public class ClienteDTO {
             ResultSet resultado = comando.executeQuery();
 
             if (resultado.next()) {
-                String senhaCriptografada = resultado.getString("senha");
-                String senhaDescriptografada = CriptografiaSenha.descriptografar(senhaCriptografada);
-                return senha.equals(senhaDescriptografada);
-
+                String senhaHash = resultado.getString("senha");
+                System.out.println("Hash armazenado: " + senhaHash);
+                System.out.println("Senha fornecida: " + senha);
+                return CriptografiaSenha.verificarSenha(senha, senhaHash);
             }
 
         } catch (SQLException e) {
@@ -161,5 +162,29 @@ public class ClienteDTO {
 
         return false;
     }
+    public String getHashSenhaPorEmail(String email) {
+        String hashSenha = null;
+        String comandoSQL = "SELECT senha FROM cliente WHERE email = ?";
+
+        try (Connection conexao = ConexaoBD.getConexaoBD();
+             PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
+
+            comando.setString(1, email);
+            ResultSet resultado = comando.executeQuery();
+
+            if (resultado.next()) {
+                hashSenha = resultado.getString("senha");
+            }
+
+            System.out.println("Hash recuperado do banco: " + hashSenha);
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao executar consulta SQL: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return hashSenha;
+    }
+
 
 }

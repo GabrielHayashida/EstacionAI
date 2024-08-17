@@ -14,4 +14,8 @@ public class VagaVO {
     private String tipo;
     private Boolean ocupada;
 
+    @Override
+    public String toString() {
+        return Integer.toString(id);
+    }
 }

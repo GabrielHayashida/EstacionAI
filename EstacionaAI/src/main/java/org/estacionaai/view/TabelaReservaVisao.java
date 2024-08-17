@@ -1,7 +1,16 @@
 package org.estacionaai.view;
 
 import org.estacionaai.controller.ReservaController;
+import org.estacionaai.controller.VagaController;
+import org.estacionaai.controller.VeiculoController;
+import org.estacionaai.model.DTO.ClienteDTO;
+import org.estacionaai.model.DTO.VagaDTO;
+import org.estacionaai.model.DTO.VeiculoDTO;
+import org.estacionaai.model.VO.ClienteVO;
 import org.estacionaai.model.VO.ReservaVO;
+import org.estacionaai.model.VO.VagaVO;
+import org.estacionaai.view.dialogs.AdicionarReservaDialog;
+import org.estacionaai.view.dialogs.AdicionarVagasDialog;
 import org.estacionaai.view.dialogs.EditarReservaDialog;
 
 import javax.swing.*;
@@ -18,6 +27,7 @@ public class TabelaReservaVisao extends JInternalFrame {
     private JTextField txtSearch;
     private JButton buttonEditReserva;
     private JButton buttonDelReserva;
+    private JButton buttonAddReserva;
     private ReservaController controller;
     private ArrayList<ReservaVO> reservas;
 
@@ -46,9 +56,11 @@ public class TabelaReservaVisao extends JInternalFrame {
 
         buttonEditReserva = new JButton("Editar");
         buttonDelReserva = new JButton("Deletar");
+        buttonAddReserva = new JButton("Adicionar");
 
         topPanel.add(buttonEditReserva);
         topPanel.add(buttonDelReserva);
+        topPanel.add(buttonAddReserva);
 
         panel.add(topPanel, BorderLayout.NORTH);
 
@@ -82,7 +94,14 @@ public class TabelaReservaVisao extends JInternalFrame {
                 deletarReserva();
             }
         });
+        buttonAddReserva.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                adicionarReserva();
+            }
+        });
     }
+
 
     private void criarTabelaReserva() {
         String[] colunas = {"ID Reserva", "Placa Veículo", "ID Vaga", "Data Entrada", "Data Saída"};
@@ -108,6 +127,28 @@ public class TabelaReservaVisao extends JInternalFrame {
             modelo.addRow(linha);
         }
     }
+
+
+
+        private void adicionarReserva() {
+            VeiculoDTO veiculoDTO = new VeiculoDTO();
+            VagaDTO vagaDTO = new VagaDTO(); // Supondo que você tenha uma classe VagaDTO
+            VeiculoController veiculoController = new VeiculoController(veiculoDTO);
+            VagaController vagaController = new VagaController(vagaDTO); // Instanciar VagaController
+
+            AdicionarReservaDialog dialog = new AdicionarReservaDialog((Frame) SwingUtilities.getWindowAncestor(this), veiculoController, vagaController);
+            dialog.setVisible(true);
+
+            if (dialog.isAtualizado()) {
+                ReservaVO novaReserva = dialog.getReserva();
+                if (controller.insertReserva(novaReserva)) {
+                    JOptionPane.showMessageDialog(this, "Reserva adicionada com sucesso.");
+                    atualizaTabela();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Falha ao adicionar reserva.");
+                }
+            }
+        }
 
     private void editarReserva() {
         if (tabela.getSelectedRowCount() == 1) {

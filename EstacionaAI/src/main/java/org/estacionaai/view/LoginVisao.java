@@ -19,7 +19,7 @@ public class LoginVisao extends JFrame {
 
     public LoginVisao(ClienteController clienteController) {
         super("Login EstacionAI");
-        this.clienteController = clienteController; // Corrigido: inicializa o clienteController
+        this.clienteController = clienteController;
         inicializarComponentes();
     }
 
@@ -53,7 +53,6 @@ public class LoginVisao extends JFrame {
                 + "arc:15;"
                 + "hoverBackground:darken(@background,20%);");
 
-        // Adiciona o componente ao painel
         panel.add(new JLabel("Bem-vindo ao EstacionAI"), "span, wrap, align center");
         panel.setPreferredSize(new Dimension(400, 300));
         panel.add(new JLabel("Email:"), "split 1, span ");
@@ -84,12 +83,19 @@ public class LoginVisao extends JFrame {
     }
 
     private void fazerLogin() {
-        String email = txtUsername.getText();
-        String senha = new String(txtPassword.getPassword());
+        String email = txtUsername.getText().trim();
+        String senha = new String(txtPassword.getPassword()).trim();
 
-        if (clienteController.verificarCredenciais(email, senha)) {
+        if (email.isEmpty() || senha.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos.");
+            return;
+        }
+
+
+        boolean credenciaisValidas = clienteController.verificarCredenciais(email, senha);
+
+        if (credenciaisValidas) {
             JOptionPane.showMessageDialog(this, "Login bem-sucedido!");
-
             new TelaInicialVisao().setVisible(true);
             this.dispose();
         } else {
@@ -98,8 +104,11 @@ public class LoginVisao extends JFrame {
     }
 
     public static void main(String[] args) {
+        // Inicializa o DTO e o Controller
         ClienteDTO clienteDTO = new ClienteDTO();
         ClienteController clienteController = new ClienteController(clienteDTO);
+
+        // Inicializa a interface gráfica na Thread de Eventos do Swing
         SwingUtilities.invokeLater(() -> new LoginVisao(clienteController));
     }
 }

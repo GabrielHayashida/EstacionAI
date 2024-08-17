@@ -132,7 +132,7 @@ public class TelaInicialVisao extends JFrame {
         VeiculoDTO veiculoDTO = new VeiculoDTO();
         VeiculoController controller = new VeiculoController(veiculoDTO);
 
-        // Passa o controlador para a TabelaVeiculosVisao
+
         TabelaVeiculosVisao tabelaVeiculosVisao = new TabelaVeiculosVisao(controller);
         desktopPane.add(tabelaVeiculosVisao);
         tabelaVeiculosVisao.setVisible(true);

@@ -14,5 +14,9 @@ public class VeiculoVO {
     private int ano;
     private int id_cliente;
 
+    @Override
+    public String toString() {
+        return placa; // Exibe apenas a placa do veículo
+    }
 
 }

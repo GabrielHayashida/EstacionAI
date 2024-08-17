@@ -3,6 +3,7 @@ package org.estacionaai.controller;
 
 import org.estacionaai.model.DTO.ClienteDTO;
 import org.estacionaai.model.VO.ClienteVO;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.ArrayList;
 
@@ -33,7 +34,20 @@ public class ClienteController {
         return clienteDTO.deleteCliente(id);
     }
     public boolean verificarCredenciais(String email, String senha) {
-        return clienteDTO.verificarCredenciais(email, senha);
+        // Recupera o hash armazenado para o email fornecido
+        String hashArmazenado = clienteDTO.getHashSenhaPorEmail(email);
+
+        // Imprime informações para depuração
+        System.out.println("Hash armazenado: " + hashArmazenado);
+        System.out.println("Senha fornecida (para depuração): '" + senha + "'");
+
+        // Verifica a senha fornecida contra o hash armazenado
+        boolean senhasCorretas = BCrypt.checkpw(senha, hashArmazenado);
+
+        // Imprime resultado da verificação
+        System.out.println("Senha verificada: " + senhasCorretas);
+
+        return senhasCorretas;
     }
 
 }

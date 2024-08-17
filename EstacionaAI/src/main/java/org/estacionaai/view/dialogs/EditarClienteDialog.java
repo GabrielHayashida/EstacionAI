@@ -12,7 +12,6 @@ public class EditarClienteDialog extends JDialog {
     private JTextField txtNome;
     private JTextField txtTelefone;
     private JTextField txtEmail;
-    private JTextField txtSenha;
     private JTextField txtEndereco;
     private JCheckBox chkAdmin;
     private JButton buttonSalvar;
@@ -38,7 +37,6 @@ public class EditarClienteDialog extends JDialog {
         txtNome = new JTextField(cliente.getNome());
         txtTelefone = new JTextField(cliente.getTelefone());
         txtEmail = new JTextField(cliente.getEmail());
-        txtSenha = new JTextField(cliente.getSenha());
         txtEndereco = new JTextField(cliente.getEndereco());
         chkAdmin = new JCheckBox("Administrador", cliente.isAdmin());
 
@@ -68,8 +66,6 @@ public class EditarClienteDialog extends JDialog {
         panel.add(txtTelefone);
         panel.add(new JLabel("Email:"));
         panel.add(txtEmail);
-        panel.add(new JLabel("Senha:"));
-        panel.add(txtSenha);
         panel.add(new JLabel("Endereço:"));
         panel.add(txtEndereco);
         panel.add(new JLabel("Administrador:"));
@@ -88,7 +84,7 @@ public class EditarClienteDialog extends JDialog {
         cliente.setNome(txtNome.getText());
         cliente.setTelefone(txtTelefone.getText());
         cliente.setEmail(txtEmail.getText());
-        cliente.setSenha(txtSenha.getText());
+
         cliente.setEndereco(txtEndereco.getText());
         cliente.setAdmin(chkAdmin.isSelected());
 

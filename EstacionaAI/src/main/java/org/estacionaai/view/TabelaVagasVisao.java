@@ -2,6 +2,7 @@ package org.estacionaai.view;
 
 import org.estacionaai.controller.VagaController;
 import org.estacionaai.model.VO.VagaVO;
+import org.estacionaai.view.dialogs.AdicionarVagasDialog;
 import org.estacionaai.view.dialogs.EditarVagasDialog;
 
 import javax.swing.*;
@@ -18,6 +19,7 @@ public class TabelaVagasVisao extends JInternalFrame {
     private JTextField txtSearch;
     private JButton buttonEditVaga;
     private JButton buttonDelVaga;
+    private JButton buttonAddVaga;
     private VagaController controller;
     private ArrayList<VagaVO> vagas;
 
@@ -46,9 +48,10 @@ public class TabelaVagasVisao extends JInternalFrame {
 
         buttonEditVaga = new JButton("Editar");
         buttonDelVaga = new JButton("Deletar");
-
+        buttonAddVaga = new JButton("Adicionar");
         topPanel.add(buttonEditVaga);
         topPanel.add(buttonDelVaga);
+        topPanel.add(buttonAddVaga);
 
         panel.add(topPanel, BorderLayout.NORTH);
 
@@ -82,7 +85,15 @@ public class TabelaVagasVisao extends JInternalFrame {
                 deletarVaga();
             }
         });
+        buttonAddVaga.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                adicionarVaga();
+            }
+        });
     }
+
+
 
     private void criarTabelaVaga() {
         String[] colunas = {"ID", "Número", "Setor", "Tipo","Ocupada"};
@@ -108,7 +119,20 @@ public class TabelaVagasVisao extends JInternalFrame {
             modelo.addRow(linha);
         }
     }
+    private void adicionarVaga() {
+        AdicionarVagasDialog dialog = new AdicionarVagasDialog((Frame) SwingUtilities.getWindowAncestor(this));
+        dialog.setVisible(true);
 
+        if (dialog.isAtualizado()) {
+            VagaVO novaVaga = dialog.getVaga();
+            if (controller.insertVaga(novaVaga)) {
+                JOptionPane.showMessageDialog(this, "Vaga adicionada com sucesso.");
+                atualizaTabela();
+            } else {
+                JOptionPane.showMessageDialog(this, "Falha ao adicionar vaga.");
+            }
+        }
+    }
     private void editarVaga() {
         if (tabela.getSelectedRowCount() == 1) {
             int selectedRow = tabela.getSelectedRow();

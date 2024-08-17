@@ -7,6 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
+
 public class ClienteVO {
     private int id;
     private String nome;
@@ -16,4 +17,8 @@ public class ClienteVO {
     private boolean admin;
     private String endereco;
 
+    @Override
+    public String toString() {
+        return nome;
+    }
 }

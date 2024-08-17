@@ -1,7 +1,12 @@
 package org.estacionaai.view;
 
+import org.estacionaai.controller.ClienteController;
 import org.estacionaai.controller.VeiculoController;
+import org.estacionaai.model.DTO.ClienteDTO;
+import org.estacionaai.model.VO.VagaVO;
 import org.estacionaai.model.VO.VeiculoVO;
+import org.estacionaai.view.dialogs.AdicionarVagasDialog;
+import org.estacionaai.view.dialogs.AdicionarVeiculoDialog;
 import org.estacionaai.view.dialogs.EditarVeiculoDialog;
 
 import javax.swing.*;
@@ -19,6 +24,7 @@ public class TabelaVeiculosVisao extends JInternalFrame {
     private JTextField txtSearch;
     private JButton buttonEditVeiculo;
     private JButton buttonDelVeiculo;
+    private JButton buttonAddVeiculo;
     private VeiculoController controller;
     private ArrayList<VeiculoVO> veiculos;
 
@@ -49,9 +55,11 @@ public class TabelaVeiculosVisao extends JInternalFrame {
 
         buttonEditVeiculo = new JButton("Editar");
         buttonDelVeiculo = new JButton("Deletar");
+        buttonAddVeiculo = new JButton("Adicionar");
 
         topPanel.add(buttonEditVeiculo);
         topPanel.add(buttonDelVeiculo);
+        topPanel.add(buttonAddVeiculo);
 
         panel.add(topPanel, BorderLayout.NORTH);
 
@@ -85,7 +93,15 @@ public class TabelaVeiculosVisao extends JInternalFrame {
                 deletarVeiculo();
             }
         });
+        buttonAddVeiculo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                adicionarVeiculo();
+            }
+        });
     }
+
+
 
     private void criarTabelaVeiculos() {
         String[] colunas = {"Placa", "Modelo", "Cor", "Ano", "ID Cliente"};
@@ -111,7 +127,22 @@ public class TabelaVeiculosVisao extends JInternalFrame {
             modelo.addRow(linha);
         }
     }
+    private void adicionarVeiculo() {
+        ClienteDTO clienteDTO = new ClienteDTO();  // Instancia corretamente o ClienteDTO
+        ClienteController clienteController = new ClienteController(clienteDTO);  // Cria o ClienteController
+        AdicionarVeiculoDialog dialog = new AdicionarVeiculoDialog((Frame) SwingUtilities.getWindowAncestor(this), clienteController);
+        dialog.setVisible(true);
 
+        if (dialog.isAtualizado()) {
+            VeiculoVO novoVeiculo = dialog.getVeiculo();
+            if (controller.insertVeiculo(novoVeiculo)) {
+                JOptionPane.showMessageDialog(this, "Veículo adicionado com sucesso.");
+                atualizaTabela();
+            } else {
+                JOptionPane.showMessageDialog(this, "Falha ao adicionar veículo.");
+            }
+        }
+    }
     private void editarVeiculo() {
         if (tabela.getSelectedRowCount() == 1) {
             int selectedRow = tabela.getSelectedRow();
@@ -134,7 +165,7 @@ public class TabelaVeiculosVisao extends JInternalFrame {
             VeiculoVO veiculo = veiculos.get(selectedRow);
             int resposta = JOptionPane.showConfirmDialog(this, "Você tem certeza que deseja excluir o veículo com placa " + veiculo.getPlaca() + "?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
             if (resposta == JOptionPane.YES_OPTION) {
-                // Implementar lógica de exclusão de veículo
+
                 controller.deleteVeiculo(veiculo.getPlaca());
                 atualizaTabela();
             }
