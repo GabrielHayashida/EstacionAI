@@ -7,16 +7,17 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
+
 public class VeiculoVO {
     private String placa;
+    private String marca;
     private String modelo;
     private String cor;
-    private int ano;
-    private int id_cliente;
+    private boolean acesso;
+    private int clienteId;
 
     @Override
     public String toString() {
-        return placa; // Exibe apenas a placa do veículo
+        return marca + " " + modelo + " (" + placa + ")";
     }
-
 }

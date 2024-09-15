@@ -2,47 +2,36 @@ package org.estacionaai.model.DTO;
 
 import org.estacionaai.controller.ConexaoBD;
 import org.estacionaai.model.VO.ClienteVO;
-import org.estacionaai.utils.CriptografiaSenha;
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ClienteDTO {
 
-    public ArrayList<ClienteVO> getClientes(String pesquisa) {
-        ArrayList<ClienteVO> clientes = new ArrayList<>();
-        String comandoSQL = "SELECT * FROM cliente where nome like ?";
+    // Método para obter todos os clientes com base na pesquisa
+    public List<ClienteVO> getClientes(String pesquisa) {
+        List<ClienteVO> clientes = new ArrayList<>();
+        String comandoSQL = "SELECT * FROM cliente WHERE nome LIKE ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
-             PreparedStatement comando =  conexao.prepareStatement(comandoSQL)){
+             PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
 
             comando.setString(1, "%" + pesquisa + "%");
             ResultSet resultado = comando.executeQuery();
 
-
             while (resultado.next()) {
-                ClienteVO clienteVO = new ClienteVO();
-
-                clienteVO.setId(resultado.getInt("id"));
-                clienteVO.setNome(resultado.getString("nome"));
-                clienteVO.setTelefone(resultado.getString("telefone"));
-                clienteVO.setEmail(resultado.getString("email"));
-                clienteVO.setSenha(resultado.getString("senha"));
-                clienteVO.setAdmin(resultado.getBoolean("admin"));
-                clienteVO.setEndereco(resultado.getString("endereco"));
-
-                clientes.add(clienteVO);
+                clientes.add(criarClienteVO(resultado));
             }
 
         } catch (SQLException e) {
             System.err.println("Erro ao executar consulta SQL: " + e.getMessage());
-            e.printStackTrace();
         }
 
         return clientes;
     }
 
+    // Método para obter um cliente pelo ID
     public ClienteVO getClienteById(int id) {
         ClienteVO clienteVO = null;
         String comandoSQL = "SELECT * FROM cliente WHERE id = ?";
@@ -54,73 +43,54 @@ public class ClienteDTO {
             ResultSet resultado = comando.executeQuery();
 
             if (resultado.next()) {
-                clienteVO = new ClienteVO();
-                clienteVO.setId(resultado.getInt("id"));
-                clienteVO.setNome(resultado.getString("nome"));
-                clienteVO.setTelefone(resultado.getString("telefone"));
-                clienteVO.setEmail(resultado.getString("email"));
-                clienteVO.setSenha(resultado.getString("senha"));
-                clienteVO.setAdmin(resultado.getBoolean("admin"));
-                clienteVO.setEndereco(resultado.getString("endereco"));
+                clienteVO = criarClienteVO(resultado);
             } else {
                 System.err.println("Nenhum cliente encontrado com o ID: " + id);
             }
 
         } catch (SQLException e) {
             System.err.println("Erro ao executar consulta SQL: " + e.getMessage());
-            e.printStackTrace();
         }
 
         return clienteVO;
     }
 
+    // Método para atualizar um cliente
     public boolean updateCliente(ClienteVO clienteVO) {
-        String comandoSQL = "UPDATE cliente SET nome = ?, telefone = ?, email = ?, senha = ?, admin = ?, endereco = ? WHERE id = ?";
+        String comandoSQL = "UPDATE cliente SET nome = ?, telefone = ?, email = ?, admin = ?, endereco = ?, data_nascimento = ? WHERE id = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
 
-            comando.setString(1, clienteVO.getNome());
-            comando.setString(2, clienteVO.getTelefone());
-            comando.setString(3, clienteVO.getEmail());
-            comando.setString(4, clienteVO.getSenha());
-            comando.setBoolean(5, clienteVO.isAdmin());
-            comando.setString(6, clienteVO.getEndereco());
-            comando.setInt(7, clienteVO.getId());
+            setClienteParameters(comando, clienteVO);
+            comando.setInt(7, clienteVO.getId()); // Atualizado para o índice correto
 
-            int resultado = comando.executeUpdate();
-            return resultado != 0;
+            return comando.executeUpdate() != 0;
 
         } catch (SQLException e) {
             System.err.println("Erro ao executar atualização SQL: " + e.getMessage());
-            e.printStackTrace();
             return false;
         }
     }
 
+    // Método para inserir um cliente
     public boolean insertCliente(ClienteVO clienteVO) {
-        String comandoSQL = "INSERT INTO cliente (nome, telefone, email, senha, admin, endereco) VALUES (?, ?, ?, ?, ?, ?)";
+        String comandoSQL = "INSERT INTO cliente (nome, telefone, email, admin, endereco, data_nascimento) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
 
-            comando.setString(1, clienteVO.getNome());
-            comando.setString(2, clienteVO.getTelefone());
-            comando.setString(3, clienteVO.getEmail());
-            comando.setString(4, CriptografiaSenha.criptografar(clienteVO.getSenha()));
-            comando.setBoolean(5, clienteVO.isAdmin());
-            comando.setString(6, clienteVO.getEndereco());
+            setClienteParameters(comando, clienteVO);
 
-            int resultado = comando.executeUpdate();
-            return resultado != 0;
+            return comando.executeUpdate() != 0;
 
         } catch (SQLException e) {
             System.err.println("Erro ao executar inserção SQL: " + e.getMessage());
-            e.printStackTrace();
             return false;
         }
     }
 
+    // Método para deletar um cliente
     public boolean deleteCliente(int id) {
         String comandoSQL = "DELETE FROM cliente WHERE id = ?";
 
@@ -128,63 +98,32 @@ public class ClienteDTO {
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
 
             comando.setInt(1, id);
-
-            int resultado = comando.executeUpdate();
-            return resultado != 0;
+            return comando.executeUpdate() != 0;
 
         } catch (SQLException e) {
             System.err.println("Erro ao executar deleção SQL: " + e.getMessage());
-            e.printStackTrace();
             return false;
         }
     }
 
-    public boolean verificarCredenciais(String email, String senha) {
-        String comandoSQL = "SELECT senha FROM cliente WHERE email = ?";
-
-        try (Connection conexao = ConexaoBD.getConexaoBD();
-             PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
-
-            comando.setString(1, email);
-            ResultSet resultado = comando.executeQuery();
-
-            if (resultado.next()) {
-                String senhaHash = resultado.getString("senha");
-                System.out.println("Hash armazenado: " + senhaHash);
-                System.out.println("Senha fornecida: " + senha);
-                return CriptografiaSenha.verificarSenha(senha, senhaHash);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Erro ao executar consulta SQL: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-    public String getHashSenhaPorEmail(String email) {
-        String hashSenha = null;
-        String comandoSQL = "SELECT senha FROM cliente WHERE email = ?";
-
-        try (Connection conexao = ConexaoBD.getConexaoBD();
-             PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
-
-            comando.setString(1, email);
-            ResultSet resultado = comando.executeQuery();
-
-            if (resultado.next()) {
-                hashSenha = resultado.getString("senha");
-            }
-
-            System.out.println("Hash recuperado do banco: " + hashSenha);
-
-        } catch (SQLException e) {
-            System.err.println("Erro ao executar consulta SQL: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return hashSenha;
+    // Método auxiliar para criar um ClienteVO a partir de um ResultSet
+    private ClienteVO criarClienteVO(ResultSet resultado) throws SQLException {
+        ClienteVO clienteVO = new ClienteVO();
+        clienteVO.setId(resultado.getInt("id"));
+        clienteVO.setNome(resultado.getString("nome"));
+        clienteVO.setTelefone(resultado.getString("telefone"));
+        clienteVO.setEmail(resultado.getString("email"));
+        clienteVO.setEndereco(resultado.getString("endereco"));
+        clienteVO.setDataNascimento(resultado.getDate("data_nascimento")); // Novo campo
+        return clienteVO;
     }
 
-
+    // Método auxiliar para definir parâmetros do cliente no PreparedStatement
+    private void setClienteParameters(PreparedStatement comando, ClienteVO clienteVO) throws SQLException {
+        comando.setString(1, clienteVO.getNome());
+        comando.setString(2, clienteVO.getTelefone());
+        comando.setString(3, clienteVO.getEmail());
+        comando.setString(4, clienteVO.getEndereco());
+        comando.setDate(5, new java.sql.Date(clienteVO.getDataNascimento().getTime())); // Novo campo
+    }
 }

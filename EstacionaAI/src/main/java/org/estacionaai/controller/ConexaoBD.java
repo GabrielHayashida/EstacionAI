@@ -1,8 +1,7 @@
 package org.estacionaai.controller;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDate;
 
 public class ConexaoBD {
 
@@ -13,8 +12,8 @@ public class ConexaoBD {
     public static Connection getConexaoBD() {
         if (conexao == null || isConnectionClosed(conexao)) {
             try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                conexao = DriverManager.getConnection("jdbc:mysql://localhost/estacionai", "root", "");
+                Class.forName("org.hsqldb.jdbc.JDBCDriver");
+                conexao = DriverManager.getConnection("jdbc:hsqldb:E:\\Fatec\\EstacionaAI\\EstacionaAI\\src\\main\\java\\org\\estacionaai\\database\\database\\estacionai;", "SA", "");
             } catch (ClassNotFoundException e) {
                 System.err.println("Erro ao carregar o driver, verifique o arquivo hsqldb.jar no classpath");
                 e.printStackTrace();
@@ -46,4 +45,62 @@ public class ConexaoBD {
             return true;
         }
     }
+
+    public static void insertCliente(String nome, String dataNascimento, String endereco, String email, String telefone) {
+        String sql = "INSERT INTO \"CLIENTE\" (nome, data_nascimento, endereco, email, telefone) VALUES (?, ?, ?, ?, ?);";
+
+        try (Connection conn = getConexaoBD();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, nome);
+            pstmt.setString(2, dataNascimento);
+            pstmt.setString(3, endereco);
+            pstmt.setString(4, email);
+            pstmt.setString(5, telefone);
+            pstmt.executeUpdate();
+
+            System.out.println("Cliente inserido com sucesso.");
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao inserir cliente: " + e.getMessage());
+        }
+    }
+
+    public static void listarClientes() {
+        String sql = "SELECT * FROM \"CLIENTE\";";
+
+        try (Connection conn = getConexaoBD();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                // Obtendo os dados de cada coluna
+                int id = rs.getInt("id");
+                String nome = rs.getString("nome");
+                String dataNascimento = rs.getString("data_nascimento");
+                String endereco = rs.getString("endereco");
+                String email = rs.getString("email");
+                String telefone = rs.getString("telefone");
+
+                // Imprimindo os dados no console
+                System.out.println("ID: " + id + ", Nome: " + nome + ", Data de Nascimento: " + dataNascimento +
+                        ", Endereço: " + endereco + ", Email: " + email + ", Telefone: " + telefone);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao consultar clientes: " + e.getMessage());
+        }
+    }
+
+    public static void main(String[] args) {
+        // Inserir um novo cliente
+        insertCliente("João da Silva", "1990-01-01", "Rua das Flores, 123", "joao@example.com", "123456789");
+
+        // Listar os clientes após a inserção
+        listarClientes();
+
+        closeConexaoBD(); // Fecha a conexão ao final
+    }
+
+
 }

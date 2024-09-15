@@ -1,53 +1,39 @@
 package org.estacionaai.controller;
 
-
 import org.estacionaai.model.DTO.ClienteDTO;
 import org.estacionaai.model.VO.ClienteVO;
-import org.mindrot.jbcrypt.BCrypt;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class ClienteController {
-    private ClienteDTO clienteDTO;
+    private final ClienteDTO clienteDTO;
 
     public ClienteController(ClienteDTO clienteDTO) {
         this.clienteDTO = clienteDTO;
     }
 
-    public ArrayList<ClienteVO> listarClientes(String pesquisa) {
+    // Método para listar clientes com base na pesquisa
+    public List<ClienteVO> listarClientes(String pesquisa) {
         return clienteDTO.getClientes(pesquisa);
     }
 
+    // Método para buscar um cliente pelo ID
     public ClienteVO buscarClientePorId(int id) {
         return clienteDTO.getClienteById(id);
     }
 
+    // Método para atualizar um cliente
     public boolean atualizarCliente(ClienteVO clienteVO) {
         return clienteDTO.updateCliente(clienteVO);
     }
 
+    // Método para inserir um novo cliente
     public boolean inserirCliente(ClienteVO clienteVO) {
         return clienteDTO.insertCliente(clienteVO);
     }
 
+    // Método para deletar um cliente
     public boolean deletarCliente(int id) {
         return clienteDTO.deleteCliente(id);
     }
-    public boolean verificarCredenciais(String email, String senha) {
-        // Recupera o hash armazenado para o email fornecido
-        String hashArmazenado = clienteDTO.getHashSenhaPorEmail(email);
-
-        // Imprime informações para depuração
-        System.out.println("Hash armazenado: " + hashArmazenado);
-        System.out.println("Senha fornecida (para depuração): '" + senha + "'");
-
-        // Verifica a senha fornecida contra o hash armazenado
-        boolean senhasCorretas = BCrypt.checkpw(senha, hashArmazenado);
-
-        // Imprime resultado da verificação
-        System.out.println("Senha verificada: " + senhasCorretas);
-
-        return senhasCorretas;
-    }
-
 }

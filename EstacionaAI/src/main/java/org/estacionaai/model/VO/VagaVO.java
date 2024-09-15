@@ -7,15 +7,14 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
+
 public class VagaVO {
     private int id;
-    private int numero;
-    private String setor;
-    private String tipo;
-    private Boolean ocupada;
+    private String descricao;
+    private boolean ocupada;
 
     @Override
     public String toString() {
-        return Integer.toString(id);
+        return descricao;
     }
 }

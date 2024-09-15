@@ -3,20 +3,16 @@ package org.estacionaai.view;
 import org.estacionaai.controller.ClienteController;
 import org.estacionaai.controller.VeiculoController;
 import org.estacionaai.model.DTO.ClienteDTO;
-import org.estacionaai.model.VO.VagaVO;
 import org.estacionaai.model.VO.VeiculoVO;
-import org.estacionaai.view.dialogs.AdicionarVagasDialog;
 import org.estacionaai.view.dialogs.AdicionarVeiculoDialog;
 import org.estacionaai.view.dialogs.EditarVeiculoDialog;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
+import java.util.List;
 
 public class TabelaVeiculosVisao extends JInternalFrame {
 
@@ -26,11 +22,9 @@ public class TabelaVeiculosVisao extends JInternalFrame {
     private JButton buttonDelVeiculo;
     private JButton buttonAddVeiculo;
     private VeiculoController controller;
-    private ArrayList<VeiculoVO> veiculos;
+    private List<VeiculoVO> veiculos;
 
     public TabelaVeiculosVisao(VeiculoController controller) {
-
-        // Configurações do JInternalFrame
         super("Gerenciamento de Veículos", true, true, false, true);
         setSize(600, 400);
         setLayout(new BorderLayout());
@@ -42,13 +36,11 @@ public class TabelaVeiculosVisao extends JInternalFrame {
     }
 
     private void initComponents() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
+        JPanel panel = new JPanel(new BorderLayout());
+        add(panel, BorderLayout.CENTER);
 
         // Painel superior com campos de pesquisa e botões
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         txtSearch = new JTextField(20);
         topPanel.add(new JLabel("Pesquisar:"));
         topPanel.add(txtSearch);
@@ -60,19 +52,19 @@ public class TabelaVeiculosVisao extends JInternalFrame {
         topPanel.add(buttonEditVeiculo);
         topPanel.add(buttonDelVeiculo);
         topPanel.add(buttonAddVeiculo);
-
         panel.add(topPanel, BorderLayout.NORTH);
 
         // Tabela
         JScrollPane scrollPane = new JScrollPane();
         panel.add(scrollPane, BorderLayout.CENTER);
-
         tabela = new JTable();
         scrollPane.setViewportView(tabela);
 
-        add(panel, BorderLayout.CENTER);
-
         // Eventos
+        configurarEventos();
+    }
+
+    private void configurarEventos() {
         txtSearch.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -80,28 +72,10 @@ public class TabelaVeiculosVisao extends JInternalFrame {
             }
         });
 
-        buttonEditVeiculo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                editarVeiculo();
-            }
-        });
-
-        buttonDelVeiculo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                deletarVeiculo();
-            }
-        });
-        buttonAddVeiculo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                adicionarVeiculo();
-            }
-        });
+        buttonEditVeiculo.addActionListener(e -> editarVeiculo());
+        buttonDelVeiculo.addActionListener(e -> deletarVeiculo());
+        buttonAddVeiculo.addActionListener(e -> adicionarVeiculo());
     }
-
-
 
     private void criarTabelaVeiculos() {
         String[] colunas = {"Placa", "Modelo", "Cor", "Ano", "ID Cliente"};
@@ -112,7 +86,6 @@ public class TabelaVeiculosVisao extends JInternalFrame {
     private void atualizaTabela() {
         DefaultTableModel modelo = (DefaultTableModel) tabela.getModel();
         modelo.setRowCount(0);
-
         String pesquisa = txtSearch.getText();
         veiculos = controller.getVeiculos(pesquisa);
 
@@ -127,6 +100,7 @@ public class TabelaVeiculosVisao extends JInternalFrame {
             modelo.addRow(linha);
         }
     }
+
     private void adicionarVeiculo() {
         ClienteDTO clienteDTO = new ClienteDTO();  // Instancia corretamente o ClienteDTO
         ClienteController clienteController = new ClienteController(clienteDTO);  // Cria o ClienteController
@@ -143,11 +117,11 @@ public class TabelaVeiculosVisao extends JInternalFrame {
             }
         }
     }
+
     private void editarVeiculo() {
         if (tabela.getSelectedRowCount() == 1) {
             int selectedRow = tabela.getSelectedRow();
             VeiculoVO veiculo = veiculos.get(selectedRow);
-
             EditarVeiculoDialog dialog = new EditarVeiculoDialog((Frame) SwingUtilities.getWindowAncestor(this), controller, veiculo);
             dialog.setVisible(true);
 
@@ -165,7 +139,6 @@ public class TabelaVeiculosVisao extends JInternalFrame {
             VeiculoVO veiculo = veiculos.get(selectedRow);
             int resposta = JOptionPane.showConfirmDialog(this, "Você tem certeza que deseja excluir o veículo com placa " + veiculo.getPlaca() + "?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
             if (resposta == JOptionPane.YES_OPTION) {
-
                 controller.deleteVeiculo(veiculo.getPlaca());
                 atualizaTabela();
             }

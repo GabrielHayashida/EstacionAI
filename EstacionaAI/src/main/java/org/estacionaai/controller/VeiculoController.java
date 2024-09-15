@@ -4,19 +4,20 @@ import lombok.NoArgsConstructor;
 import org.estacionaai.model.DTO.VeiculoDTO;
 import org.estacionaai.model.VO.VeiculoVO;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 public class VeiculoController {
     private VeiculoDTO veiculoDTO;
 
-    public VeiculoController(VeiculoDTO veiculoDAO) {
-        this.veiculoDTO = veiculoDAO;
+    public VeiculoController(VeiculoDTO veiculoDTO) {
+        this.veiculoDTO = veiculoDTO;
     }
 
-    public ArrayList<VeiculoVO> getVeiculos(String pesquisa) {
+    public List<VeiculoVO> getVeiculos(String pesquisa) {
         return veiculoDTO.getVeiculos(pesquisa);
     }
+
     public VeiculoVO getVeiculoById(String placa) {
         return veiculoDTO.getVeiculoById(placa);
     }

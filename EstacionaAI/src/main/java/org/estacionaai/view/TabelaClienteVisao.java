@@ -1,28 +1,26 @@
 package org.estacionaai.view;
 
 import org.estacionaai.controller.ClienteController;
+import org.estacionaai.model.DTO.ClienteDTO;
 import org.estacionaai.model.VO.ClienteVO;
 import org.estacionaai.view.dialogs.EditarClienteDialog;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
+import java.util.List;
 
 public class TabelaClienteVisao extends JInternalFrame {
 
     private JTable tabela;
     private JTextField txtSearch;
-
     private JButton buttonEditCliente;
     private JButton buttonDelCliente;
     private ClienteController controller;
-    private ArrayList<ClienteVO> clientes;
+    private List<ClienteVO> clientes;
 
     public TabelaClienteVisao(ClienteController controller) {
         super("Gerenciamento de Clientes", true, true, false, true);
@@ -30,45 +28,39 @@ public class TabelaClienteVisao extends JInternalFrame {
         setLayout(new BorderLayout());
         this.controller = controller;
 
-
-
         initComponents();
         criarTabelaCliente();
         atualizaTabela();
     }
 
     private void initComponents() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
+        JPanel panel = new JPanel(new BorderLayout());
 
         // Painel superior com campos de pesquisa e botões
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         txtSearch = new JTextField(20);
-        topPanel.add(new JLabel("Pesquisar:"));
-        topPanel.add(txtSearch);
-
-
         buttonEditCliente = new JButton("Editar");
         buttonDelCliente = new JButton("Deletar");
 
-
+        topPanel.add(new JLabel("Pesquisar:"));
+        topPanel.add(txtSearch);
         topPanel.add(buttonEditCliente);
         topPanel.add(buttonDelCliente);
-
         panel.add(topPanel, BorderLayout.NORTH);
 
         // Tabela
         JScrollPane scrollPane = new JScrollPane();
-        panel.add(scrollPane, BorderLayout.CENTER);
-
         tabela = new JTable();
         scrollPane.setViewportView(tabela);
+        panel.add(scrollPane, BorderLayout.CENTER);
 
         add(panel, BorderLayout.CENTER);
 
         // Eventos
+        configurarEventos();
+    }
+
+    private void configurarEventos() {
         txtSearch.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -76,21 +68,8 @@ public class TabelaClienteVisao extends JInternalFrame {
             }
         });
 
-
-
-        buttonEditCliente.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                editarCliente();
-            }
-        });
-
-        buttonDelCliente.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                deletarCliente();
-            }
-        });
+        buttonEditCliente.addActionListener(this::editarCliente);
+        buttonDelCliente.addActionListener(this::deletarCliente);
     }
 
     private void criarTabelaCliente() {
@@ -102,7 +81,6 @@ public class TabelaClienteVisao extends JInternalFrame {
     private void atualizaTabela() {
         DefaultTableModel modelo = (DefaultTableModel) tabela.getModel();
         modelo.setRowCount(0);
-
 
         String pesquisa = txtSearch.getText();
         clientes = controller.listarClientes(pesquisa);
@@ -119,9 +97,7 @@ public class TabelaClienteVisao extends JInternalFrame {
         }
     }
 
-
-
-    private void editarCliente() {
+    private void editarCliente(ActionEvent e) {
         if (tabela.getSelectedRowCount() == 1) {
             int selectedRow = tabela.getSelectedRow();
             ClienteVO cliente = clientes.get(selectedRow);
@@ -137,18 +113,42 @@ public class TabelaClienteVisao extends JInternalFrame {
         }
     }
 
-    private void deletarCliente() {
+    private void deletarCliente(ActionEvent e) {
         if (tabela.getSelectedRowCount() == 1) {
             int selectedRow = tabela.getSelectedRow();
             ClienteVO cliente = clientes.get(selectedRow);
             int resposta = JOptionPane.showConfirmDialog(this, "Você tem certeza que deseja excluir o cliente " + cliente.getNome() + "?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
             if (resposta == JOptionPane.YES_OPTION) {
-                // Implementar lógica de exclusão de cliente
                 controller.deletarCliente(cliente.getId());
                 atualizaTabela();
             }
         } else {
             JOptionPane.showMessageDialog(this, "Selecione um cliente para excluir.");
         }
+    }
+
+    public static void main(String[] args) {
+        // Configuração do look and feel (opcional)
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Criação da interface gráfica
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Sistema de Gerenciamento de Clientes");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(800, 600);
+
+            // Instancia o ClienteDTO e o ClienteController
+            ClienteDTO clienteDTO = new ClienteDTO();
+            ClienteController clienteController = new ClienteController(clienteDTO);
+
+            // Adiciona a tela de visualização de clientes ao JFrame
+            TabelaClienteVisao tabelaClienteVisao = new TabelaClienteVisao(clienteController);
+            frame.add(tabelaClienteVisao);
+            frame.setVisible(true);
+        });
     }
 }
