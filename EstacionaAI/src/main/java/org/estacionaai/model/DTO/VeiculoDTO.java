@@ -11,7 +11,7 @@ public class VeiculoDTO {
 
     public List<VeiculoVO> getVeiculos(String pesquisa) {
         List<VeiculoVO> veiculos = new ArrayList<>();
-        String comandoSQL = "SELECT * FROM veiculo WHERE placa LIKE ? OR modelo LIKE ? OR cor LIKE ?";
+        String comandoSQL = "SELECT * FROM veiculo WHERE placa LIKE ? OR modelo LIKE ? OR cor LIKE ? OR marca LIKE ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
@@ -21,16 +21,18 @@ public class VeiculoDTO {
             comando.setString(1, pesquisaLike);
             comando.setString(2, pesquisaLike);
             comando.setString(3, pesquisaLike);
+            comando.setString(4, pesquisaLike);
 
             ResultSet resultado = comando.executeQuery();
 
             while (resultado.next()) {
                 VeiculoVO veiculoVO = new VeiculoVO();
                 veiculoVO.setPlaca(resultado.getString("placa"));
+                veiculoVO.setMarca(resultado.getString("marca"));
                 veiculoVO.setModelo(resultado.getString("modelo"));
                 veiculoVO.setCor(resultado.getString("cor"));
-                veiculoVO.setAcesso(resultado.getBoolean("acesso")); // Adicionei acesso aqui
-                veiculoVO.setClienteId(resultado.getInt("id_cliente")); // Mudando para clienteId
+                veiculoVO.setAcesso(resultado.getBoolean("acesso"));
+                veiculoVO.setClienteId(resultado.getInt("id_cliente"));
                 veiculos.add(veiculoVO);
             }
 
@@ -56,10 +58,11 @@ public class VeiculoDTO {
             if (resultado.next()) {
                 veiculoVO = new VeiculoVO();
                 veiculoVO.setPlaca(resultado.getString("placa"));
+                veiculoVO.setMarca(resultado.getString("marca"));
                 veiculoVO.setModelo(resultado.getString("modelo"));
                 veiculoVO.setCor(resultado.getString("cor"));
-                veiculoVO.setAcesso(resultado.getBoolean("acesso")); // Adicionei acesso aqui
-                veiculoVO.setClienteId(resultado.getInt("id_cliente")); // Mudando para clienteId
+                veiculoVO.setAcesso(resultado.getBoolean("acesso"));
+                veiculoVO.setClienteId(resultado.getInt("id_cliente"));
             } else {
                 System.err.println("Nenhum veículo encontrado com a placa: " + placa);
             }
@@ -73,16 +76,17 @@ public class VeiculoDTO {
     }
 
     public boolean updateVeiculo(VeiculoVO veiculoVO) {
-        String comandoSQL = "UPDATE veiculo SET modelo = ?, cor = ?, acesso = ?, id_cliente = ? WHERE placa = ?";
+        String comandoSQL = "UPDATE veiculo SET marca = ?, modelo = ?, cor = ?, acesso = ?, id_cliente = ? WHERE placa = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
 
-            comando.setString(1, veiculoVO.getModelo());
-            comando.setString(2, veiculoVO.getCor());
-            comando.setBoolean(3, veiculoVO.isAcesso()); // Mudando para acesso
-            comando.setInt(4, veiculoVO.getClienteId()); // Mudando para clienteId
-            comando.setString(5, veiculoVO.getPlaca());
+            comando.setString(1, veiculoVO.getMarca());
+            comando.setString(2, veiculoVO.getModelo());
+            comando.setString(3, veiculoVO.getCor());
+            comando.setBoolean(4, veiculoVO.isAcesso());
+            comando.setInt(5, veiculoVO.getClienteId());
+            comando.setString(6, veiculoVO.getPlaca());
 
             return comando.executeUpdate() > 0;
 
@@ -94,16 +98,17 @@ public class VeiculoDTO {
     }
 
     public boolean insertVeiculo(VeiculoVO veiculoVO) {
-        String comandoSQL = "INSERT INTO veiculo (placa, modelo, cor, acesso, id_cliente) VALUES (?, ?, ?, ?, ?)";
+        String comandoSQL = "INSERT INTO veiculo (placa, marca, modelo, cor, acesso, id_cliente) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
 
             comando.setString(1, veiculoVO.getPlaca());
-            comando.setString(2, veiculoVO.getModelo());
-            comando.setString(3, veiculoVO.getCor());
-            comando.setBoolean(4, veiculoVO.isAcesso()); // Mudando para acesso
-            comando.setInt(5, veiculoVO.getClienteId()); // Mudando para clienteId
+            comando.setString(2, veiculoVO.getMarca());
+            comando.setString(3, veiculoVO.getModelo());
+            comando.setString(4, veiculoVO.getCor());
+            comando.setBoolean(5, veiculoVO.isAcesso());
+            comando.setInt(6, veiculoVO.getClienteId());
 
             return comando.executeUpdate() > 0;
 

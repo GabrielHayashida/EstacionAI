@@ -9,9 +9,8 @@ import org.estacionaai.model.VO.VagaVO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import com.toedter.calendar.JDateChooser;
 
@@ -53,19 +52,8 @@ public class AdicionarReservaDialog extends JDialog {
         btnSalvar = new JButton("Salvar");
         btnCancelar = new JButton("Cancelar");
 
-        btnSalvar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                salvar();
-            }
-        });
-
-        btnCancelar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cancel();
-            }
-        });
+        btnSalvar.addActionListener(this::salvar);
+        btnCancelar.addActionListener(e -> cancel());
     }
 
     private JPanel criarPainelCampos() {
@@ -88,26 +76,31 @@ public class AdicionarReservaDialog extends JDialog {
         return panel;
     }
 
-    private void salvar() {
+    private void salvar(ActionEvent e) {
         try {
             VeiculoVO veiculoSelecionado = (VeiculoVO) cmbVeiculos.getSelectedItem();
             VagaVO vagaSelecionada = (VagaVO) cmbVagas.getSelectedItem();
-            reserva.setPlaca_veiculo(veiculoSelecionado != null ? veiculoSelecionado.getPlaca() : null);
-            reserva.setId_vaga(vagaSelecionada != null ? vagaSelecionada.getNumero() : -1);
+
+            if (veiculoSelecionado == null || vagaSelecionada == null) {
+                throw new IllegalArgumentException("Veículo ou vaga não podem estar vazios.");
+            }
+
+            reserva.setVeiculoPlaca(veiculoSelecionado.getPlaca());
+            reserva.setVagaId(vagaSelecionada.getId());
 
             if (dateChooserEntrada.getDate() != null && dateChooserSaida.getDate() != null) {
-                LocalDateTime dataEntrada = LocalDateTime.ofInstant(dateChooserEntrada.getDate().toInstant(), java.time.ZoneId.systemDefault());
-                LocalDateTime dataSaida = LocalDateTime.ofInstant(dateChooserSaida.getDate().toInstant(), java.time.ZoneId.systemDefault());
-                reserva.setData_entrada(dataEntrada);
-                reserva.setData_saida(dataSaida);
+                LocalDateTime dataEntrada = LocalDateTime.ofInstant(dateChooserEntrada.getDate().toInstant(), ZoneId.systemDefault());
+                LocalDateTime dataSaida = LocalDateTime.ofInstant(dateChooserSaida.getDate().toInstant(), ZoneId.systemDefault());
+                reserva.setDataHoraEntrada(dataEntrada);
+                reserva.setDataHoraSaida(dataSaida);
             } else {
                 throw new IllegalArgumentException("Data de entrada e/ou saída não podem ser nulas.");
             }
 
             atualizado = true;
             setVisible(false);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erro ao salvar reserva: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao salvar reserva: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -117,7 +110,7 @@ public class AdicionarReservaDialog extends JDialog {
     }
 
     private void carregarVeiculos() {
-        ArrayList<VeiculoVO> veiculos = veiculoController.getVeiculos("");
+        ArrayList<VeiculoVO> veiculos = (ArrayList<VeiculoVO>) veiculoController.getVeiculos("");
         DefaultComboBoxModel<VeiculoVO> modelo = new DefaultComboBoxModel<>();
         for (VeiculoVO veiculo : veiculos) {
             modelo.addElement(veiculo);

@@ -6,7 +6,6 @@ import net.miginfocom.swing.MigLayout;
 import org.estacionaai.controller.ClienteController;
 import org.estacionaai.model.DTO.ClienteDTO;
 import org.estacionaai.model.VO.ClienteVO;
-import org.estacionaai.utils.CriptografiaSenha;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,8 +14,6 @@ public class CadastroVisao extends JFrame {
     private JTextField txtNome;
     private JTextField txtTelefone;
     private JTextField txtEmail;
-    private JPasswordField txtSenha;
-
     private JTextField txtEndereco;
     private JButton cmdCadastrar;
     private ClienteController clienteController;
@@ -41,21 +38,17 @@ public class CadastroVisao extends JFrame {
         txtNome = new JTextField(20);
         txtTelefone = new JTextField(20);
         txtEmail = new JTextField(20);
-        txtSenha = new JPasswordField(20);
-
         txtEndereco = new JTextField(20);
         cmdCadastrar = new JButton("Cadastrar");
 
         txtNome.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Digite seu nome");
         txtTelefone.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Digite seu telefone");
         txtEmail.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Digite seu email");
-        txtSenha.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Digite sua senha");
         txtEndereco.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Digite seu endereço");
 
         txtNome.putClientProperty("JComponent.roundRect", true);
         txtTelefone.putClientProperty("JComponent.roundRect", true);
         txtEmail.putClientProperty("JComponent.roundRect", true);
-        txtSenha.putClientProperty("JComponent.roundRect", true);
         txtEndereco.putClientProperty("JComponent.roundRect", true);
 
         cmdCadastrar.putClientProperty(FlatClientProperties.STYLE, ""
@@ -76,8 +69,6 @@ public class CadastroVisao extends JFrame {
         panel.add(txtTelefone, "wrap");
         panel.add(new JLabel("Email:"), "split 1, span");
         panel.add(txtEmail, "wrap");
-        panel.add(new JLabel("Senha:"), "split 1, span");
-        panel.add(txtSenha, "wrap");
         panel.add(new JLabel("Endereço:"), "split 1, span");
         panel.add(txtEndereco, "wrap");
         panel.add(cmdCadastrar, "span, align center");
@@ -93,11 +84,9 @@ public class CadastroVisao extends JFrame {
         String nome = txtNome.getText();
         String telefone = txtTelefone.getText();
         String email = txtEmail.getText();
-        String senha = new String(txtSenha.getPassword());
-
         String endereco = txtEndereco.getText();
 
-        if (nome.isEmpty() || telefone.isEmpty() || email.isEmpty() || senha.isEmpty() || endereco.isEmpty()) {
+        if (nome.isEmpty() || telefone.isEmpty() || email.isEmpty() || endereco.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Todos os campos devem ser preenchidos.");
             return;
         }
@@ -106,11 +95,9 @@ public class CadastroVisao extends JFrame {
         clienteVO.setNome(nome);
         clienteVO.setTelefone(telefone);
         clienteVO.setEmail(email);
-        clienteVO.setSenha(CriptografiaSenha.criptografar(senha));
-
         clienteVO.setEndereco(endereco);
 
-        if (clienteController.inserirCliente(clienteVO)) {
+        if (clienteController.insertCliente(clienteVO)) {
             JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!");
             this.dispose();
         } else {
@@ -119,8 +106,7 @@ public class CadastroVisao extends JFrame {
     }
 
     public static void main(String[] args) {
-        ClienteDTO clienteDTO = new ClienteDTO();
-        ClienteController clienteController = new ClienteController(clienteDTO);
+        ClienteController clienteController = new ClienteController(new ClienteDTO());
         SwingUtilities.invokeLater(() -> new CadastroVisao(clienteController));
     }
 }

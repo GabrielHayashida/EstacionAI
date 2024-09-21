@@ -13,27 +13,27 @@ public class ClienteController {
     }
 
     // Método para listar clientes com base na pesquisa
-    public List<ClienteVO> listarClientes(String pesquisa) {
+    public List<ClienteVO> getClientes(String pesquisa) {
         return clienteDTO.getClientes(pesquisa);
     }
 
     // Método para buscar um cliente pelo ID
-    public ClienteVO buscarClientePorId(int id) {
+    public ClienteVO getClienteById(int id) {
         return clienteDTO.getClienteById(id);
     }
 
     // Método para atualizar um cliente
-    public boolean atualizarCliente(ClienteVO clienteVO) {
+    public boolean updateCliente(ClienteVO clienteVO) {
         return clienteDTO.updateCliente(clienteVO);
     }
 
     // Método para inserir um novo cliente
-    public boolean inserirCliente(ClienteVO clienteVO) {
+    public boolean insertCliente(ClienteVO clienteVO) {
         return clienteDTO.insertCliente(clienteVO);
     }
 
     // Método para deletar um cliente
-    public boolean deletarCliente(int id) {
+    public boolean deleteCliente(int id) {
         return clienteDTO.deleteCliente(id);
     }
 }

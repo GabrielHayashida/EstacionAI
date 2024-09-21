@@ -2,7 +2,6 @@ package org.estacionaai.model.DTO;
 
 import org.estacionaai.controller.ConexaoBD;
 import org.estacionaai.model.VO.VagaVO;
-import org.estacionaai.model.VO.VeiculoVO;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,7 +9,7 @@ import java.util.ArrayList;
 public class VagaDTO {
     public ArrayList<VagaVO> getVagas(String pesquisa) {
         ArrayList<VagaVO> vagas = new ArrayList<>();
-        String comandoSQL = "SELECT * FROM vaga WHERE numero LIKE ? OR setor LIKE ? OR tipo LIKE ?";
+        String comandoSQL = "SELECT * FROM vaga WHERE descricao LIKE ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
@@ -18,17 +17,13 @@ public class VagaDTO {
             // Preparar o parâmetro de pesquisa
             String pesquisaLike = "%" + pesquisa + "%";
             comando.setString(1, pesquisaLike);
-            comando.setString(2, pesquisaLike);
-            comando.setString(3, pesquisaLike);
 
             ResultSet resultado = comando.executeQuery();
 
             while (resultado.next()) {
                 VagaVO vagaVO = new VagaVO();
                 vagaVO.setId(resultado.getInt("id"));
-                vagaVO.setNumero(resultado.getInt("numero"));
-                vagaVO.setSetor(resultado.getString("setor"));
-                vagaVO.setTipo(resultado.getString("tipo"));
+                vagaVO.setDescricao(resultado.getString("descricao"));
                 vagaVO.setOcupada(resultado.getBoolean("ocupada"));
                 vagas.add(vagaVO);
             }
@@ -42,16 +37,14 @@ public class VagaDTO {
     }
 
     public boolean updateVaga(VagaVO vagaVO) {
-        String comandoSQL = "UPDATE vaga SET numero = ?, setor = ?, tipo = ?, ocupada = ? WHERE id = ?";
+        String comandoSQL = "UPDATE vaga SET descricao = ?, ocupada = ? WHERE id = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
 
-            comando.setInt(1, vagaVO.getNumero());
-            comando.setString(2, vagaVO.getSetor());
-            comando.setString(3, vagaVO.getTipo());
-            comando.setBoolean(4, vagaVO.getOcupada());
-            comando.setInt(5, vagaVO.getId());
+            comando.setString(1, vagaVO.getDescricao());
+            comando.setBoolean(2, vagaVO.isOcupada());
+            comando.setInt(3, vagaVO.getId());
 
             int resultado = comando.executeUpdate();
             return resultado != 0;
@@ -64,15 +57,13 @@ public class VagaDTO {
     }
 
     public boolean insertVaga(VagaVO vagaVO) {
-        String comandoSQL = "INSERT INTO vaga (numero, setor, tipo, ocupada) VALUES (?, ?, ?, ?)";
+        String comandoSQL = "INSERT INTO vaga (descricao, ocupada) VALUES (?, ?)";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
 
-            comando.setInt(1, vagaVO.getNumero());
-            comando.setString(2, vagaVO.getSetor());
-            comando.setString(3, vagaVO.getTipo());
-            comando.setBoolean(4, vagaVO.getOcupada());
+            comando.setString(1, vagaVO.getDescricao());
+            comando.setBoolean(2, vagaVO.isOcupada());
 
             int resultado = comando.executeUpdate();
             return resultado != 0;
@@ -101,8 +92,4 @@ public class VagaDTO {
             return false;
         }
     }
-
-
-
-
 }

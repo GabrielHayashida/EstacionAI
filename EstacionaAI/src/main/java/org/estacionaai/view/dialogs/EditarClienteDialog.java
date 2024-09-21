@@ -13,7 +13,6 @@ public class EditarClienteDialog extends JDialog {
     private JTextField txtTelefone;
     private JTextField txtEmail;
     private JTextField txtEndereco;
-    private JCheckBox chkAdmin;
     private JButton buttonSalvar;
     private JButton buttonCancelar;
     private ClienteController controller;
@@ -34,15 +33,16 @@ public class EditarClienteDialog extends JDialog {
     }
 
     private void initComponents() {
+        // Initialize fields with existing cliente data
         txtNome = new JTextField(cliente.getNome());
         txtTelefone = new JTextField(cliente.getTelefone());
         txtEmail = new JTextField(cliente.getEmail());
         txtEndereco = new JTextField(cliente.getEndereco());
-        chkAdmin = new JCheckBox("Administrador", cliente.isAdmin());
 
         buttonSalvar = new JButton("Salvar");
         buttonCancelar = new JButton("Cancelar");
 
+        // Add action listeners for buttons
         buttonSalvar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -53,13 +53,13 @@ public class EditarClienteDialog extends JDialog {
         buttonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dispose();
+                dispose(); // Close dialog without saving
             }
         });
     }
 
     private JPanel criarPainelCampos() {
-        JPanel panel = new JPanel(new GridLayout(6, 2));
+        JPanel panel = new JPanel(new GridLayout(5, 2)); // Alterado para 5 linhas
         panel.add(new JLabel("Nome:"));
         panel.add(txtNome);
         panel.add(new JLabel("Telefone:"));
@@ -68,8 +68,6 @@ public class EditarClienteDialog extends JDialog {
         panel.add(txtEmail);
         panel.add(new JLabel("Endereço:"));
         panel.add(txtEndereco);
-        panel.add(new JLabel("Administrador:"));
-        panel.add(chkAdmin);
         return panel;
     }
 
@@ -81,22 +79,22 @@ public class EditarClienteDialog extends JDialog {
     }
 
     private void salvarCliente() {
+        // Update cliente with the data from fields
         cliente.setNome(txtNome.getText());
         cliente.setTelefone(txtTelefone.getText());
         cliente.setEmail(txtEmail.getText());
-
         cliente.setEndereco(txtEndereco.getText());
-        cliente.setAdmin(chkAdmin.isSelected());
 
-        if (controller.atualizarCliente(cliente)) {
+        // Try to save the updated cliente
+        if (controller.updateCliente(cliente)) { // Ensure method name is correct
             updated = true;
-            dispose();
+            dispose(); // Close dialog after successful update
         } else {
             JOptionPane.showMessageDialog(this, "Erro ao atualizar cliente.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     public boolean isUpdated() {
-        return updated;
+        return updated; // Return whether the cliente was updated
     }
 }

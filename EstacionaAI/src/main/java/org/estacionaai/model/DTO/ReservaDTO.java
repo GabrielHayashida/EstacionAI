@@ -2,8 +2,6 @@ package org.estacionaai.model.DTO;
 
 import org.estacionaai.controller.ConexaoBD;
 import org.estacionaai.model.VO.ReservaVO;
-import org.estacionaai.model.VO.VagaVO;
-import org.estacionaai.model.VO.VeiculoVO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ReservaDTO {
+
     public ArrayList<ReservaVO> getReservas(String pesquisa) {
         ArrayList<ReservaVO> reservas = new ArrayList<>();
         String comandoSQL = "SELECT * FROM reserva WHERE placa_veiculo LIKE ? OR id_vaga LIKE ? OR data_entrada LIKE ? OR data_saida LIKE ?";
@@ -31,13 +30,14 @@ public class ReservaDTO {
             while (resultado.next()) {
                 ReservaVO reservaVO = new ReservaVO();
                 reservaVO.setId(resultado.getInt("id"));
-                reservaVO.setId_vaga(resultado.getInt("id_vaga"));
-                reservaVO.setPlaca_veiculo(resultado.getString("placa_veiculo"));
-                reservaVO.setData_entrada(resultado.getTimestamp("data_entrada").toLocalDateTime());
-                if(resultado.getTimestamp("data_saida")== null){
-                    reservaVO.setData_saida(null);
-                }else{
-                    reservaVO.setData_saida(resultado.getTimestamp("data_saida").toLocalDateTime());
+                reservaVO.setVagaId(resultado.getInt("id_vaga"));
+                reservaVO.setVeiculoPlaca(resultado.getString("placa_veiculo"));
+                reservaVO.setDataHoraEntrada(resultado.getTimestamp("data_entrada").toLocalDateTime());
+
+                if (resultado.getTimestamp("data_saida") == null) {
+                    reservaVO.setDataHoraSaida(null);
+                } else {
+                    reservaVO.setDataHoraSaida(resultado.getTimestamp("data_saida").toLocalDateTime());
                 }
 
                 reservas.add(reservaVO);
@@ -50,8 +50,9 @@ public class ReservaDTO {
 
         return reservas;
     }
+
     public ReservaVO getReservaById(int id) {
-        ReservaVO reservaVO= null;
+        ReservaVO reservaVO = null;
         String comandoSQL = "SELECT * FROM reserva WHERE id = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
@@ -63,11 +64,10 @@ public class ReservaDTO {
             if (resultado.next()) {
                 reservaVO = new ReservaVO();
                 reservaVO.setId(resultado.getInt("id"));
-                reservaVO.setId_vaga(resultado.getInt("id_vaga"));
-                reservaVO.setPlaca_veiculo(resultado.getString("placa_veiculo"));
-                reservaVO.setData_entrada(resultado.getTimestamp("data_entrada").toLocalDateTime());
-                reservaVO.setData_saida(resultado.getTimestamp("data_saida").toLocalDateTime());
-
+                reservaVO.setVagaId(resultado.getInt("id_vaga"));
+                reservaVO.setVeiculoPlaca(resultado.getString("placa_veiculo"));
+                reservaVO.setDataHoraEntrada(resultado.getTimestamp("data_entrada").toLocalDateTime());
+                reservaVO.setDataHoraSaida(resultado.getTimestamp("data_saida").toLocalDateTime());
             } else {
                 System.err.println("Nenhuma reserva encontrada com o ID: " + id);
             }
@@ -79,9 +79,10 @@ public class ReservaDTO {
 
         return reservaVO;
     }
+
     public ArrayList<ReservaVO> getReservasByPlaca(String placa) {
         ArrayList<ReservaVO> reservas = new ArrayList<>();
-        String comandoSQL = "SELECT * FROM reserva WHERE placa = ?";
+        String comandoSQL = "SELECT * FROM reserva WHERE placa_veiculo = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
@@ -92,10 +93,11 @@ public class ReservaDTO {
             while (resultado.next()) {
                 ReservaVO reservaVO = new ReservaVO();
                 reservaVO.setId(resultado.getInt("id"));
-                reservaVO.setId_vaga(resultado.getInt("id_vaga"));
-                reservaVO.setPlaca_veiculo(resultado.getString("placa_veiculo"));
-                reservaVO.setData_entrada(resultado.getTimestamp("data_entrada").toLocalDateTime());
-                reservaVO.setData_saida(resultado.getTimestamp("data_saida").toLocalDateTime());
+                reservaVO.setVagaId(resultado.getInt("id_vaga"));
+                reservaVO.setVeiculoPlaca(resultado.getString("placa_veiculo"));
+                reservaVO.setDataHoraEntrada(resultado.getTimestamp("data_entrada").toLocalDateTime());
+                reservaVO.setDataHoraSaida(resultado.getTimestamp("data_saida").toLocalDateTime());
+
                 reservas.add(reservaVO);
             }
 
@@ -106,16 +108,17 @@ public class ReservaDTO {
 
         return reservas;
     }
+
     public boolean updateReserva(ReservaVO reservaVO) {
         String comandoSQL = "UPDATE reserva SET placa_veiculo = ?, id_vaga = ?, data_entrada = ?, data_saida = ? WHERE id = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
 
-            comando.setString(1, reservaVO.getPlaca_veiculo());
-            comando.setInt(2, reservaVO.getId_vaga());
-            comando.setString(3, reservaVO.getData_entrada().toString());
-            comando.setString(4, reservaVO.getData_saida().toString());
+            comando.setString(1, reservaVO.getVeiculoPlaca());
+            comando.setInt(2, reservaVO.getVagaId());
+            comando.setString(3, reservaVO.getDataHoraEntrada().toString());
+            comando.setString(4, reservaVO.getDataHoraSaida() != null ? reservaVO.getDataHoraSaida().toString() : null);
             comando.setInt(5, reservaVO.getId());
 
             int resultado = comando.executeUpdate();
@@ -128,6 +131,7 @@ public class ReservaDTO {
             return false;
         }
     }
+
     public boolean insertReserva(ReservaVO reservaVO) {
         String comandoSQL = "INSERT INTO reserva (id, placa_veiculo, id_vaga, data_entrada, data_saida) VALUES (?, ?, ?, ?, ?)";
 
@@ -135,10 +139,10 @@ public class ReservaDTO {
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
 
             comando.setInt(1, reservaVO.getId());
-            comando.setString(2, reservaVO.getPlaca_veiculo());
-            comando.setInt(3, reservaVO.getId_vaga());
-            comando.setString(4, reservaVO.getData_entrada().toString());
-            comando.setString(5, reservaVO.getData_saida().toString());
+            comando.setString(2, reservaVO.getVeiculoPlaca());
+            comando.setInt(3, reservaVO.getVagaId());
+            comando.setString(4, reservaVO.getDataHoraEntrada().toString());
+            comando.setString(5, reservaVO.getDataHoraSaida() != null ? reservaVO.getDataHoraSaida().toString() : null);
 
             int resultado = comando.executeUpdate();
 

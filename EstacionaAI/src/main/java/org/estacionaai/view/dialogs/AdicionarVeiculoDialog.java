@@ -14,7 +14,6 @@ public class AdicionarVeiculoDialog extends JDialog {
     private JTextField txtPlaca;
     private JTextField txtModelo;
     private JTextField txtCor;
-    private JTextField txtAno;
     private JComboBox<ClienteVO> cmbClientes;
     private JButton btnSalvar;
     private JButton btnCancelar;
@@ -41,7 +40,6 @@ public class AdicionarVeiculoDialog extends JDialog {
         txtPlaca = new JTextField(10);
         txtModelo = new JTextField(10);
         txtCor = new JTextField(10);
-        txtAno = new JTextField(10);
         cmbClientes = new JComboBox<>();
         btnSalvar = new JButton("Salvar");
         btnCancelar = new JButton("Cancelar");
@@ -62,15 +60,13 @@ public class AdicionarVeiculoDialog extends JDialog {
     }
 
     private JPanel criarPainelCampos() {
-        JPanel panel = new JPanel(new GridLayout(5, 2));
+        JPanel panel = new JPanel(new GridLayout(4, 2));
         panel.add(new JLabel("Placa:"));
         panel.add(txtPlaca);
         panel.add(new JLabel("Modelo:"));
         panel.add(txtModelo);
         panel.add(new JLabel("Cor:"));
         panel.add(txtCor);
-        panel.add(new JLabel("Ano:"));
-        panel.add(txtAno);
         panel.add(new JLabel("Cliente:"));
         panel.add(cmbClientes);
         return panel;
@@ -84,7 +80,7 @@ public class AdicionarVeiculoDialog extends JDialog {
     }
 
     private void carregarClientes() {
-        ArrayList<ClienteVO> clientes = clienteController.listarClientes("");  // Carrega todos os clientes
+        ArrayList<ClienteVO> clientes = (ArrayList<ClienteVO>) clienteController.getClientes("");  // Carrega todos os clientes
         DefaultComboBoxModel<ClienteVO> modelo = new DefaultComboBoxModel<>();
         for (ClienteVO cliente : clientes) {
             modelo.addElement(cliente);
@@ -93,17 +89,21 @@ public class AdicionarVeiculoDialog extends JDialog {
     }
 
     private void salvar() {
+        if (txtPlaca.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "A placa não pode ser vazia.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         try {
             veiculo.setPlaca(txtPlaca.getText());
             veiculo.setModelo(txtModelo.getText());
             veiculo.setCor(txtCor.getText());
-            veiculo.setAno(Integer.parseInt(txtAno.getText()));
             ClienteVO clienteSelecionado = (ClienteVO) cmbClientes.getSelectedItem();
-            veiculo.setId_cliente(clienteSelecionado != null ? clienteSelecionado.getId() : -1);
+            veiculo.setClienteId(clienteSelecionado != null ? clienteSelecionado.getId() : -1);
             atualizado = true;
             setVisible(false);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Número inválido", "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao salvar veículo: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 

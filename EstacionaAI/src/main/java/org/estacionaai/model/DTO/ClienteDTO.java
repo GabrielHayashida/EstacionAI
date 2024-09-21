@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ClienteDTO {
 
-    // Método para obter todos os clientes com base na pesquisa
+
     public List<ClienteVO> getClientes(String pesquisa) {
         List<ClienteVO> clientes = new ArrayList<>();
         String comandoSQL = "SELECT * FROM cliente WHERE nome LIKE ?";
@@ -55,7 +55,7 @@ public class ClienteDTO {
         return clienteVO;
     }
 
-    // Método para atualizar um cliente
+
     public boolean updateCliente(ClienteVO clienteVO) {
         String comandoSQL = "UPDATE cliente SET nome = ?, telefone = ?, email = ?, admin = ?, endereco = ?, data_nascimento = ? WHERE id = ?";
 
@@ -63,7 +63,7 @@ public class ClienteDTO {
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
 
             setClienteParameters(comando, clienteVO);
-            comando.setInt(7, clienteVO.getId()); // Atualizado para o índice correto
+            comando.setInt(7, clienteVO.getId());
 
             return comando.executeUpdate() != 0;
 
@@ -90,7 +90,7 @@ public class ClienteDTO {
         }
     }
 
-    // Método para deletar um cliente
+
     public boolean deleteCliente(int id) {
         String comandoSQL = "DELETE FROM cliente WHERE id = ?";
 
@@ -106,7 +106,7 @@ public class ClienteDTO {
         }
     }
 
-    // Método auxiliar para criar um ClienteVO a partir de um ResultSet
+
     private ClienteVO criarClienteVO(ResultSet resultado) throws SQLException {
         ClienteVO clienteVO = new ClienteVO();
         clienteVO.setId(resultado.getInt("id"));
@@ -114,16 +114,16 @@ public class ClienteDTO {
         clienteVO.setTelefone(resultado.getString("telefone"));
         clienteVO.setEmail(resultado.getString("email"));
         clienteVO.setEndereco(resultado.getString("endereco"));
-        clienteVO.setDataNascimento(resultado.getDate("data_nascimento")); // Novo campo
+        clienteVO.setDataNascimento(resultado.getDate("data_nascimento"));
         return clienteVO;
     }
 
-    // Método auxiliar para definir parâmetros do cliente no PreparedStatement
+
     private void setClienteParameters(PreparedStatement comando, ClienteVO clienteVO) throws SQLException {
         comando.setString(1, clienteVO.getNome());
         comando.setString(2, clienteVO.getTelefone());
         comando.setString(3, clienteVO.getEmail());
         comando.setString(4, clienteVO.getEndereco());
-        comando.setDate(5, new java.sql.Date(clienteVO.getDataNascimento().getTime())); // Novo campo
+        comando.setDate(5, new java.sql.Date(clienteVO.getDataNascimento().getTime()));
     }
 }
