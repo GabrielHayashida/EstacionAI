@@ -78,7 +78,7 @@ public class TabelaVeiculosVisao extends JInternalFrame {
     }
 
     private void criarTabelaVeiculos() {
-        String[] colunas = {"Placa", "Modelo", "Cor", "Ano", "ID Cliente"};
+        String[] colunas = {"Placa", "Marca", "Modelo", "Cor","Acesso", "ID Cliente"};
         DefaultTableModel modelo = new DefaultTableModel(colunas, 0);
         tabela.setModel(modelo);
     }
@@ -92,10 +92,11 @@ public class TabelaVeiculosVisao extends JInternalFrame {
         for (VeiculoVO veiculo : veiculos) {
             Object[] linha = {
                     veiculo.getPlaca(),
+                    veiculo.getMarca(),
                     veiculo.getModelo(),
                     veiculo.getCor(),
-                    veiculo.getAno(),
-                    veiculo.getId_cliente()
+                    veiculo.isAcesso(),
+                    veiculo.getClienteId(),
             };
             modelo.addRow(linha);
         }

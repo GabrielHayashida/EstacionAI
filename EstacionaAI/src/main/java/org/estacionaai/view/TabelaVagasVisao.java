@@ -96,7 +96,7 @@ public class TabelaVagasVisao extends JInternalFrame {
 
 
     private void criarTabelaVaga() {
-        String[] colunas = {"ID", "Número", "Setor", "Tipo","Ocupada"};
+        String[] colunas = {"ID","Descricao","Ocupada"};
         DefaultTableModel modelo = new DefaultTableModel(colunas, 0);
         tabela.setModel(modelo);
     }
@@ -111,10 +111,8 @@ public class TabelaVagasVisao extends JInternalFrame {
         for (VagaVO vaga : vagas) {
             Object[] linha = {
                     vaga.getId(),
-                    vaga.getNumero(),
-                    vaga.getSetor(),
-                    vaga.getTipo(),
-                    vaga.getOcupada()
+                    vaga.getDescricao(),
+                    vaga.isOcupada()
             };
             modelo.addRow(linha);
         }
@@ -160,7 +158,7 @@ public class TabelaVagasVisao extends JInternalFrame {
             try {
                 int selectedRow = tabela.getSelectedRow();
                 VagaVO vaga = vagas.get(selectedRow);
-                int resposta = JOptionPane.showConfirmDialog(this, "Você tem certeza que deseja excluir a vaga " + vaga.getNumero() + "?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
+                int resposta = JOptionPane.showConfirmDialog(this, "Você tem certeza que deseja excluir a vaga " + vaga.getId() + "?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
                 if (resposta == JOptionPane.YES_OPTION) {
                     boolean sucesso = controller.deleteVaga(String.valueOf(vaga.getId()));
                     if (sucesso) {

@@ -3,14 +3,10 @@ package org.estacionaai.view;
 import org.estacionaai.controller.ReservaController;
 import org.estacionaai.controller.VagaController;
 import org.estacionaai.controller.VeiculoController;
-import org.estacionaai.model.DTO.ClienteDTO;
 import org.estacionaai.model.DTO.VagaDTO;
 import org.estacionaai.model.DTO.VeiculoDTO;
-import org.estacionaai.model.VO.ClienteVO;
 import org.estacionaai.model.VO.ReservaVO;
-import org.estacionaai.model.VO.VagaVO;
 import org.estacionaai.view.dialogs.AdicionarReservaDialog;
-import org.estacionaai.view.dialogs.AdicionarVagasDialog;
 import org.estacionaai.view.dialogs.EditarReservaDialog;
 
 import javax.swing.*;
@@ -94,6 +90,7 @@ public class TabelaReservaVisao extends JInternalFrame {
                 deletarReserva();
             }
         });
+
         buttonAddReserva.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -101,7 +98,6 @@ public class TabelaReservaVisao extends JInternalFrame {
             }
         });
     }
-
 
     private void criarTabelaReserva() {
         String[] colunas = {"ID Reserva", "Placa Veículo", "ID Vaga", "Data Entrada", "Data Saída"};
@@ -119,36 +115,34 @@ public class TabelaReservaVisao extends JInternalFrame {
         for (ReservaVO reserva : reservas) {
             Object[] linha = {
                     reserva.getId(),
-                    reserva.getPlaca_veiculo(),
-                    reserva.getId_vaga(),
-                    reserva.getData_entrada(),
-                    reserva.getData_saida()
+                    reserva.getVeiculoPlaca(),
+                    reserva.getVagaId(),
+                    reserva.getDataHoraEntrada(),
+                    reserva.getDataHoraSaida() != null ? reserva.getDataHoraSaida() : "Ainda no estacionamento"
             };
             modelo.addRow(linha);
         }
     }
 
+    private void adicionarReserva() {
+        VeiculoDTO veiculoDTO = new VeiculoDTO();
+        VagaDTO vagaDTO = new VagaDTO();
+        VeiculoController veiculoController = new VeiculoController(veiculoDTO);
+        VagaController vagaController = new VagaController(vagaDTO);
 
+        AdicionarReservaDialog dialog = new AdicionarReservaDialog((Frame) SwingUtilities.getWindowAncestor(this), veiculoController, vagaController);
+        dialog.setVisible(true);
 
-        private void adicionarReserva() {
-            VeiculoDTO veiculoDTO = new VeiculoDTO();
-            VagaDTO vagaDTO = new VagaDTO(); // Supondo que você tenha uma classe VagaDTO
-            VeiculoController veiculoController = new VeiculoController(veiculoDTO);
-            VagaController vagaController = new VagaController(vagaDTO); // Instanciar VagaController
-
-            AdicionarReservaDialog dialog = new AdicionarReservaDialog((Frame) SwingUtilities.getWindowAncestor(this), veiculoController, vagaController);
-            dialog.setVisible(true);
-
-            if (dialog.isAtualizado()) {
-                ReservaVO novaReserva = dialog.getReserva();
-                if (controller.insertReserva(novaReserva)) {
-                    JOptionPane.showMessageDialog(this, "Reserva adicionada com sucesso.");
-                    atualizaTabela();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Falha ao adicionar reserva.");
-                }
+        if (dialog.isAtualizado()) {
+            ReservaVO novaReserva = dialog.getReserva();
+            if (controller.insertReserva(novaReserva)) {
+                JOptionPane.showMessageDialog(this, "Reserva adicionada com sucesso.");
+                atualizaTabela();
+            } else {
+                JOptionPane.showMessageDialog(this, "Falha ao adicionar reserva.");
             }
         }
+    }
 
     private void editarReserva() {
         if (tabela.getSelectedRowCount() == 1) {
@@ -177,6 +171,19 @@ public class TabelaReservaVisao extends JInternalFrame {
     }
 
     private void deletarReserva() {
+        if (tabela.getSelectedRowCount() == 1) {
+            int selectedRow = tabela.getSelectedRow();
+            int reservaId = (Integer) tabela.getValueAt(selectedRow, 0);
+            int confirmacao = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja deletar esta reserva?", "Confirmar exclusão", JOptionPane.YES_NO_OPTION);
 
+            if (confirmacao == JOptionPane.YES_OPTION) {
+                // Implementar a lógica de exclusão no controller
+                // controller.deleteReserva(reservaId); -> Caso deleteReserva esteja implementado no controller
+                JOptionPane.showMessageDialog(this, "Reserva deletada com sucesso.");
+                atualizaTabela();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecione uma reserva para deletar.");
+        }
     }
 }

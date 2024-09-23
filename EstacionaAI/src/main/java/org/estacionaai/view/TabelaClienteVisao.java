@@ -83,7 +83,7 @@ public class TabelaClienteVisao extends JInternalFrame {
         modelo.setRowCount(0);
 
         String pesquisa = txtSearch.getText();
-        clientes = controller.listarClientes(pesquisa);
+        clientes = controller.getClientes(pesquisa);
 
         for (ClienteVO cliente : clientes) {
             Object[] linha = {
@@ -119,7 +119,7 @@ public class TabelaClienteVisao extends JInternalFrame {
             ClienteVO cliente = clientes.get(selectedRow);
             int resposta = JOptionPane.showConfirmDialog(this, "Você tem certeza que deseja excluir o cliente " + cliente.getNome() + "?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
             if (resposta == JOptionPane.YES_OPTION) {
-                controller.deletarCliente(cliente.getId());
+                controller.deleteCliente(cliente.getId());
                 atualizaTabela();
             }
         } else {
@@ -128,26 +128,20 @@ public class TabelaClienteVisao extends JInternalFrame {
     }
 
     public static void main(String[] args) {
-        // Configuração do look and feel (opcional)
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // Criação da interface gráfica
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Sistema de Gerenciamento de Clientes");
+            JFrame frame = new JFrame("Gerenciamento de Clientes");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(800, 600);
+            frame.setLocationRelativeTo(null);
 
-            // Instancia o ClienteDTO e o ClienteController
-            ClienteDTO clienteDTO = new ClienteDTO();
-            ClienteController clienteController = new ClienteController(clienteDTO);
-
-            // Adiciona a tela de visualização de clientes ao JFrame
-            TabelaClienteVisao tabelaClienteVisao = new TabelaClienteVisao(clienteController);
-            frame.add(tabelaClienteVisao);
+            TabelaClienteVisao tela = new TabelaClienteVisao(new ClienteController(new ClienteDTO()));
+            frame.add(tela);
             frame.setVisible(true);
         });
     }

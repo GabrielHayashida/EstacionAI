@@ -13,7 +13,7 @@ public class ReservaDTO {
 
     public ArrayList<ReservaVO> getReservas(String pesquisa) {
         ArrayList<ReservaVO> reservas = new ArrayList<>();
-        String comandoSQL = "SELECT * FROM reserva WHERE placa_veiculo LIKE ? OR id_vaga LIKE ? OR data_entrada LIKE ? OR data_saida LIKE ?";
+        String comandoSQL = "SELECT * FROM Reserva WHERE veiculo_placa LIKE ? OR id_vaga LIKE ? OR data_entrada LIKE ? OR data_saida LIKE ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
@@ -31,7 +31,7 @@ public class ReservaDTO {
                 ReservaVO reservaVO = new ReservaVO();
                 reservaVO.setId(resultado.getInt("id"));
                 reservaVO.setVagaId(resultado.getInt("id_vaga"));
-                reservaVO.setVeiculoPlaca(resultado.getString("placa_veiculo"));
+                reservaVO.setVeiculoPlaca(resultado.getString("veiculo_placa"));
                 reservaVO.setDataHoraEntrada(resultado.getTimestamp("data_entrada").toLocalDateTime());
 
                 if (resultado.getTimestamp("data_saida") == null) {
@@ -53,7 +53,7 @@ public class ReservaDTO {
 
     public ReservaVO getReservaById(int id) {
         ReservaVO reservaVO = null;
-        String comandoSQL = "SELECT * FROM reserva WHERE id = ?";
+        String comandoSQL = "SELECT * FROM Reserva WHERE id = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
@@ -65,7 +65,7 @@ public class ReservaDTO {
                 reservaVO = new ReservaVO();
                 reservaVO.setId(resultado.getInt("id"));
                 reservaVO.setVagaId(resultado.getInt("id_vaga"));
-                reservaVO.setVeiculoPlaca(resultado.getString("placa_veiculo"));
+                reservaVO.setVeiculoPlaca(resultado.getString("veiculo_placa"));
                 reservaVO.setDataHoraEntrada(resultado.getTimestamp("data_entrada").toLocalDateTime());
                 reservaVO.setDataHoraSaida(resultado.getTimestamp("data_saida").toLocalDateTime());
             } else {
@@ -82,7 +82,7 @@ public class ReservaDTO {
 
     public ArrayList<ReservaVO> getReservasByPlaca(String placa) {
         ArrayList<ReservaVO> reservas = new ArrayList<>();
-        String comandoSQL = "SELECT * FROM reserva WHERE placa_veiculo = ?";
+        String comandoSQL = "SELECT * FROM Reserva WHERE veiculo_placa = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
@@ -94,7 +94,7 @@ public class ReservaDTO {
                 ReservaVO reservaVO = new ReservaVO();
                 reservaVO.setId(resultado.getInt("id"));
                 reservaVO.setVagaId(resultado.getInt("id_vaga"));
-                reservaVO.setVeiculoPlaca(resultado.getString("placa_veiculo"));
+                reservaVO.setVeiculoPlaca(resultado.getString("veiculo_placa"));
                 reservaVO.setDataHoraEntrada(resultado.getTimestamp("data_entrada").toLocalDateTime());
                 reservaVO.setDataHoraSaida(resultado.getTimestamp("data_saida").toLocalDateTime());
 
@@ -110,7 +110,7 @@ public class ReservaDTO {
     }
 
     public boolean updateReserva(ReservaVO reservaVO) {
-        String comandoSQL = "UPDATE reserva SET placa_veiculo = ?, id_vaga = ?, data_entrada = ?, data_saida = ? WHERE id = ?";
+        String comandoSQL = "UPDATE Reserva SET veiculo_placa = ?, id_vaga = ?, data_entrada = ?, data_saida = ? WHERE id = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
@@ -133,7 +133,7 @@ public class ReservaDTO {
     }
 
     public boolean insertReserva(ReservaVO reservaVO) {
-        String comandoSQL = "INSERT INTO reserva (id, placa_veiculo, id_vaga, data_entrada, data_saida) VALUES (?, ?, ?, ?, ?)";
+        String comandoSQL = "INSERT INTO Reserva (id, veiculo_placa, id_vaga, data_entrada, data_saida) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {

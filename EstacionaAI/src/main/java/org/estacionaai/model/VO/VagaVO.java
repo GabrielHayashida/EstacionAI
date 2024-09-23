@@ -13,6 +13,7 @@ public class VagaVO {
     private String descricao;
     private boolean ocupada;
 
+
     @Override
     public String toString() {
         return descricao;

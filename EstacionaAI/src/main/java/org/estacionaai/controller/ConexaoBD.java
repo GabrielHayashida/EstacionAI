@@ -13,7 +13,7 @@ public class ConexaoBD {
         if (conexao == null || isConnectionClosed(conexao)) {
             try {
                 Class.forName("org.hsqldb.jdbc.JDBCDriver");
-                conexao = DriverManager.getConnection("jdbc:hsqldb:E:\\Fatec\\EstacionaAI\\EstacionaAI\\src\\main\\java\\org\\estacionaai\\database\\database\\estacionai;", "SA", "");
+                conexao = DriverManager.getConnection("jdbc:hsqldb:file:E:/Fatec/EstacionaAI/EstacionaAI/src/main/java/org/estacionaai/database/estacionaidb/estacionai;", "SA", "");
             } catch (ClassNotFoundException e) {
                 System.err.println("Erro ao carregar o driver, verifique o arquivo hsqldb.jar no classpath");
                 e.printStackTrace();
@@ -67,7 +67,7 @@ public class ConexaoBD {
     }
 
     public static void listarClientes() {
-        String sql = "SELECT * FROM \"CLIENTE\";";
+        String sql = "SELECT * FROM \"Cliente\";";
 
         try (Connection conn = getConexaoBD();
              Statement stmt = conn.createStatement();
@@ -93,8 +93,7 @@ public class ConexaoBD {
     }
 
     public static void main(String[] args) {
-        // Inserir um novo cliente
-        insertCliente("João da Silva", "1990-01-01", "Rua das Flores, 123", "joao@example.com", "123456789");
+
 
         // Listar os clientes após a inserção
         listarClientes();

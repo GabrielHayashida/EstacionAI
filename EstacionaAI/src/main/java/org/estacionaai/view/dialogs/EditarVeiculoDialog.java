@@ -10,10 +10,11 @@ import java.awt.event.ActionListener;
 
 public class EditarVeiculoDialog extends JDialog {
     private JTextField txtPlaca;
+    private JTextField txtMarca;
     private JTextField txtModelo;
     private JTextField txtCor;
-    private JTextField txtAno;
-    private JTextField txtIdCliente;
+    private JTextField txtClienteId;
+    private JCheckBox chkAcesso;
     private JButton buttonSalvar;
     private JButton buttonCancelar;
     private VeiculoController controller;
@@ -36,10 +37,11 @@ public class EditarVeiculoDialog extends JDialog {
     private void initComponents() {
         txtPlaca = new JTextField(veiculo.getPlaca());
         txtPlaca.setEnabled(false); // Placa não pode ser alterada
+        txtMarca = new JTextField(veiculo.getMarca());
         txtModelo = new JTextField(veiculo.getModelo());
         txtCor = new JTextField(veiculo.getCor());
-        txtAno = new JTextField(String.valueOf(veiculo.getAno()));
-        txtIdCliente = new JTextField(String.valueOf(veiculo.getId_cliente()));
+        txtClienteId = new JTextField(String.valueOf(veiculo.getClienteId()));
+        chkAcesso = new JCheckBox("Acesso Permitido", veiculo.isAcesso());
 
         buttonSalvar = new JButton("Salvar");
         buttonCancelar = new JButton("Cancelar");
@@ -63,14 +65,16 @@ public class EditarVeiculoDialog extends JDialog {
         JPanel panel = new JPanel(new GridLayout(5, 2));
         panel.add(new JLabel("Placa:"));
         panel.add(txtPlaca);
+        panel.add(new JLabel("Marca:"));
+        panel.add(txtMarca);
         panel.add(new JLabel("Modelo:"));
         panel.add(txtModelo);
         panel.add(new JLabel("Cor:"));
         panel.add(txtCor);
-        panel.add(new JLabel("Ano:"));
-        panel.add(txtAno);
         panel.add(new JLabel("ID Cliente:"));
-        panel.add(txtIdCliente);
+        panel.add(txtClienteId);
+        panel.add(new JLabel("Acesso:"));
+        panel.add(chkAcesso);
         return panel;
     }
 
@@ -82,16 +86,21 @@ public class EditarVeiculoDialog extends JDialog {
     }
 
     private void salvarVeiculo() {
-        veiculo.setModelo(txtModelo.getText());
-        veiculo.setCor(txtCor.getText());
-        veiculo.setAno(Integer.parseInt(txtAno.getText()));
-        veiculo.setId_cliente(Integer.parseInt(txtIdCliente.getText()));
+        try {
+            veiculo.setMarca(txtMarca.getText());
+            veiculo.setModelo(txtModelo.getText());
+            veiculo.setCor(txtCor.getText());
+            veiculo.setClienteId(Integer.parseInt(txtClienteId.getText()));
+            veiculo.setAcesso(chkAcesso.isSelected());
 
-        if (controller.updateVeiculo(veiculo)) {
-            updated = true;
-            dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Erro ao atualizar veículo.", "Erro", JOptionPane.ERROR_MESSAGE);
+            if (controller.updateVeiculo(veiculo)) {
+                updated = true;
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Erro ao atualizar veículo.", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "ID Cliente inválido.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 

@@ -9,10 +9,9 @@ import java.util.List;
 
 public class ClienteDTO {
 
-
     public List<ClienteVO> getClientes(String pesquisa) {
         List<ClienteVO> clientes = new ArrayList<>();
-        String comandoSQL = "SELECT * FROM cliente WHERE nome LIKE ?";
+        String comandoSQL =  "SELECT * FROM Cliente WHERE nome LIKE ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
@@ -31,10 +30,9 @@ public class ClienteDTO {
         return clientes;
     }
 
-    // Método para obter um cliente pelo ID
     public ClienteVO getClienteById(int id) {
         ClienteVO clienteVO = null;
-        String comandoSQL = "SELECT * FROM cliente WHERE id = ?";
+        String comandoSQL = "SELECT * FROM Cliente WHERE id = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
@@ -55,15 +53,14 @@ public class ClienteDTO {
         return clienteVO;
     }
 
-
     public boolean updateCliente(ClienteVO clienteVO) {
-        String comandoSQL = "UPDATE cliente SET nome = ?, telefone = ?, email = ?, admin = ?, endereco = ?, data_nascimento = ? WHERE id = ?";
+        String comandoSQL = "UPDATE Cliente SET nome = ?, telefone = ?, email = ?, endereco = ?, data_nascimento = ? WHERE id = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
 
             setClienteParameters(comando, clienteVO);
-            comando.setInt(7, clienteVO.getId());
+            comando.setInt(6, clienteVO.getId());
 
             return comando.executeUpdate() != 0;
 
@@ -73,9 +70,8 @@ public class ClienteDTO {
         }
     }
 
-    // Método para inserir um cliente
     public boolean insertCliente(ClienteVO clienteVO) {
-        String comandoSQL = "INSERT INTO cliente (nome, telefone, email, admin, endereco, data_nascimento) VALUES (?, ?, ?, ?, ?, ?)";
+        String comandoSQL = "INSERT INTO Cliente (nome, telefone, email, endereco, data_nascimento) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
@@ -90,9 +86,8 @@ public class ClienteDTO {
         }
     }
 
-
     public boolean deleteCliente(int id) {
-        String comandoSQL = "DELETE FROM cliente WHERE id = ?";
+        String comandoSQL = "DELETE FROM Cliente WHERE id = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
@@ -106,7 +101,6 @@ public class ClienteDTO {
         }
     }
 
-
     private ClienteVO criarClienteVO(ResultSet resultado) throws SQLException {
         ClienteVO clienteVO = new ClienteVO();
         clienteVO.setId(resultado.getInt("id"));
@@ -117,7 +111,6 @@ public class ClienteDTO {
         clienteVO.setDataNascimento(resultado.getDate("data_nascimento"));
         return clienteVO;
     }
-
 
     private void setClienteParameters(PreparedStatement comando, ClienteVO clienteVO) throws SQLException {
         comando.setString(1, clienteVO.getNome());

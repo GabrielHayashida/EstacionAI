@@ -32,7 +32,7 @@ public class VeiculoDTO {
                 veiculoVO.setModelo(resultado.getString("modelo"));
                 veiculoVO.setCor(resultado.getString("cor"));
                 veiculoVO.setAcesso(resultado.getBoolean("acesso"));
-                veiculoVO.setClienteId(resultado.getInt("id_cliente"));
+                veiculoVO.setClienteId(resultado.getInt("cliente_id"));
                 veiculos.add(veiculoVO);
             }
 
@@ -62,7 +62,7 @@ public class VeiculoDTO {
                 veiculoVO.setModelo(resultado.getString("modelo"));
                 veiculoVO.setCor(resultado.getString("cor"));
                 veiculoVO.setAcesso(resultado.getBoolean("acesso"));
-                veiculoVO.setClienteId(resultado.getInt("id_cliente"));
+                veiculoVO.setClienteId(resultado.getInt("cliente_id"));
             } else {
                 System.err.println("Nenhum veículo encontrado com a placa: " + placa);
             }
@@ -76,7 +76,7 @@ public class VeiculoDTO {
     }
 
     public boolean updateVeiculo(VeiculoVO veiculoVO) {
-        String comandoSQL = "UPDATE veiculo SET marca = ?, modelo = ?, cor = ?, acesso = ?, id_cliente = ? WHERE placa = ?";
+        String comandoSQL = "UPDATE veiculo SET marca = ?, modelo = ?, cor = ?, acesso = ?, cliente_id = ? WHERE placa = ?";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
@@ -98,7 +98,7 @@ public class VeiculoDTO {
     }
 
     public boolean insertVeiculo(VeiculoVO veiculoVO) {
-        String comandoSQL = "INSERT INTO veiculo (placa, marca, modelo, cor, acesso, id_cliente) VALUES (?, ?, ?, ?, ?, ?)";
+        String comandoSQL = "INSERT INTO veiculo (placa, marca, modelo, cor, acesso, cliente_id) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conexao = ConexaoBD.getConexaoBD();
              PreparedStatement comando = conexao.prepareStatement(comandoSQL)) {
